@@ -13,10 +13,10 @@ Integration platform for various aviation data sources and APIs.
 | Endpoint/Data | Status | Notes |
 |--------------|--------|-------|
 | METAR | ✅ | Implemented with tests for single/multiple stations and error handling |
-| TAF | ❌ | Not yet implemented |
-| Forecast Discussion | ❌ | Not yet implemented |
-| CWA (Center Weather Advisory) | ❌ | Not yet implemented |
-| MIS (Meteorological Impact Statement) | ❌ | Not yet implemented |
+| TAF | ✅ | Implemented with tests for single/multiple stations and error handling |
+| Forecast Discussion | ✅ | Implemented with tests for WFO-specific and full discussions |
+| CWA (Center Weather Advisory) | ✅ | Implemented with tests for filtering by location and hazard type |
+| MIS (Meteorological Impact Statement) | ✅ | Implemented with tests for filtering by location and handling no active MIS |
 | AIRMET | ❌ | Not yet implemented |
 | SIGMET | ❌ | Not yet implemented |
 | PIREP | ❌ | Not yet implemented |

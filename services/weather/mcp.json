@@ -44,6 +44,80 @@
           "format": "${format}"
         }
       }
+    },
+    {
+      "name": "taf",
+      "description": "Retrieve TAF data for specified stations",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/taf",
+        "query": {
+          "ids": "string",
+          "format": "xml",
+          "hours_before": "number"
+        }
+      }
+    },
+    {
+      "name": "forecast_discussion",
+      "description": "Retrieve Area Forecast Discussion for specified WFO",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/fcstdisc",
+        "query": {
+          "cwa": "string",
+          "type": {
+            "type": "string",
+            "enum": ["afd", "af"],
+            "default": "afd"
+          },
+          "format": "xml"
+        }
+      }
+    },
+    {
+      "name": "cwa",
+      "description": "Retrieve Center Weather Advisories",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/cwa",
+        "query": {
+          "loc": {
+            "type": "string",
+            "description": "CWSU identifier to filter by"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": ["all", "ts", "turb", "ice", "ifr"],
+            "default": "all",
+            "description": "Type of hazard to filter by"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["xml", "json", "geojson"],
+            "default": "xml"
+          }
+        }
+      }
+    },
+    {
+      "name": "mis",
+      "description": "Retrieve Meteorological Impact Statements",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/mis",
+        "query": {
+          "loc": {
+            "type": "string",
+            "description": "CWSU identifier to filter by"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["xml", "json"],
+            "default": "xml"
+          }
+        }
+      }
     }
   ]
 } 
