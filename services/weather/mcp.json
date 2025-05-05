@@ -118,6 +118,147 @@
           }
         }
       }
+    },
+    {
+      "name": "gairmet",
+      "description": "Retrieve Graphical AIRMETs for the contiguous United States",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/gairmet",
+        "query": {
+          "type": {
+            "type": "string",
+            "enum": ["sierra", "tango", "zulu"],
+            "description": "Product type (sierra=IFR/mountain obscuration, tango=turbulence, zulu=icing)"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": ["turb-hi", "turb-lo", "llws", "sfc_wind", "ifr", "mtn_obs", "ice", "fzlvl"],
+            "description": "Specific hazard type to filter by"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["decoded", "json", "geojson", "xml"],
+            "default": "xml"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date in yyyymmdd_hhmm format or ISO8601"
+          }
+        }
+      }
+    },
+    {
+      "name": "airsigmet",
+      "description": "Retrieve domestic SIGMETs for the United States",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/airsigmet",
+        "query": {
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "xml"],
+            "default": "xml",
+            "description": "Response format"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": ["conv", "turb", "ice", "ifr"],
+            "description": "Type of hazard to filter by"
+          },
+          "level": {
+            "type": "number",
+            "description": "The level +-3000' to search"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date in yyyymmdd_hhmm format or ISO8601"
+          }
+        }
+      }
+    },
+    {
+      "name": "isigmet",
+      "description": "Retrieve international SIGMETs (Significant Meteorological Information)",
+      "method": "GET",
+      "url": "https://aviationweather.gov/api/data/isigmet",
+      "parameters": {
+        "format": {
+          "type": "string",
+          "description": "Response format (xml or json)",
+          "default": "xml"
+        },
+        "hazard": {
+          "type": "string",
+          "description": "Filter by hazard type (e.g., turb, ice, va)",
+          "optional": true
+        },
+        "level": {
+          "type": "integer",
+          "description": "Filter by flight level (in hundreds of feet)",
+          "optional": true
+        }
+      }
+    },
+    {
+      "name": "pirep",
+      "description": "Retrieve PIREPs (Pilot Reports) and AIREPs (Aircraft Reports)",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/pirep",
+        "query": {
+          "format": {
+            "type": "string",
+            "enum": ["xml", "json"],
+            "default": "xml",
+            "description": "Response format"
+          },
+          "hours": {
+            "type": "integer",
+            "description": "Number of hours before current time (1-24)",
+            "minimum": 1,
+            "maximum": 24,
+            "default": 2
+          },
+          "type": {
+            "type": "string",
+            "enum": ["pirep", "airep"],
+            "description": "Type of reports to retrieve (PIREP or AIREP)",
+            "optional": true
+          },
+          "bbox": {
+            "type": "string",
+            "description": "Bounding box in format minlon,minlat,maxlon,maxlat",
+            "optional": true
+          }
+        }
+      }
+    },
+    {
+      "name": "windtemp",
+      "description": "Retrieves Wind and Temperature Aloft forecasts for specified regions and levels",
+      "method": "GET",
+      "url": "https://aviationweather.gov/api/data/windtemp",
+      "parameters": {
+        "region": {
+          "type": "string",
+          "description": "Region to display forecasts for",
+          "enum": ["all", "bos", "mia", "chi", "dfw", "slc", "sfo", "alaska", "hawaii", "other_pac"],
+          "default": "all"
+        },
+        "level": {
+          "type": "string",
+          "description": "Flight level range",
+          "enum": ["low", "high"],
+          "default": "low"
+        },
+        "fcst": {
+          "type": "string",
+          "description": "Forecast time in hours",
+          "enum": ["06", "12", "24"],
+          "default": "06"
+        }
+      }
     }
   ]
 } 

@@ -17,10 +17,10 @@ Integration platform for various aviation data sources and APIs.
 | Forecast Discussion | ✅ | Implemented with tests for WFO-specific and full discussions |
 | CWA (Center Weather Advisory) | ✅ | Implemented with tests for filtering by location and hazard type |
 | MIS (Meteorological Impact Statement) | ✅ | Implemented with tests for filtering by location and handling no active MIS |
-| AIRMET | ❌ | Not yet implemented |
-| SIGMET | ❌ | Not yet implemented |
-| PIREP | ❌ | Not yet implemented |
-| Wind & Temperature Aloft | ❌ | Not yet implemented |
+| G-AIRMET | ✅ | Implemented with tests for filtering by type (sierra/tango/zulu) and hazard |
+| SIGMET | ✅ | Implemented with tests for filtering by type (sierra/tango/zulu) and hazard |
+| PIREP | ✅ | Implemented with tests for filtering by type (PIREP/AIREP), location, and weather conditions |
+| Wind & Temperature Aloft | ✅ | Implemented with tests for different regions, altitudes, and forecast periods |
 | Features & Obstacles | ❌ | Available but not prioritized |
 
 ### FAA EIM Weather Proximity API
