@@ -1,79 +1,114 @@
-# Sources
+# Aviation Multi-Channel Platform
 
-Notams (FAA API)
+Integration platform for various aviation data sources and APIs.
 
-Weather
+## API Integration Status
 
-- EIM Weather Proximity API from faa (precipitation only)
+### FAA NOTAM API (external-api.faa.gov)
+| Endpoint/Data | Status | Notes |
+|--------------|--------|-------|
+| NOTAM Data | ❌ | Not yet implemented |
 
-- aviation weather api
+### Aviation Weather API (aviationweather.gov)
+| Endpoint/Data | Status | Notes |
+|--------------|--------|-------|
+| METAR | ✅ | Implemented with tests for single/multiple stations and error handling |
+| TAF | ❌ | Not yet implemented |
+| Forecast Discussion | ❌ | Not yet implemented |
+| CWA (Center Weather Advisory) | ❌ | Not yet implemented |
+| MIS (Meteorological Impact Statement) | ❌ | Not yet implemented |
+| AIRMET | ❌ | Not yet implemented |
+| SIGMET | ❌ | Not yet implemented |
+| PIREP | ❌ | Not yet implemented |
+| Wind & Temperature Aloft | ❌ | Not yet implemented |
+| Features & Obstacles | ❌ | Available but not prioritized |
 
-https://aviationweather.gov/data/api/
+### FAA EIM Weather Proximity API
+| Endpoint/Data | Status | Notes |
+|--------------|--------|-------|
+| Precipitation Data | ❌ | Not yet implemented |
 
-- TAF, METAR, forecast discussion, CWA, MIS, AIRMET, SIGMET, PIREP, wind & temp aloft
+### FAA Delay API (external-api.faa.gov/asws)
+| Endpoint/Data | Status | Notes |
+|--------------|--------|-------|
+| Airport Delays | ❌ | Not yet implemented |
+| Ground Stops | ❌ | Not yet implemented |
+| Ground Delay Programs | ❌ | Not yet implemented |
 
-- features & obstacles? for some reason that's available in this API
+### FAA Airport Information API (external-api.faa.gov/adip)
+| Endpoint/Data | Status | Notes |
+|--------------|--------|-------|
+| Airport Data | ❌ | Not yet implemented |
+| Runway Information | ❌ | Not yet implemented |
+| Airport Forecasts | ❌ | Not yet implemented |
+| Alternate Routes | ❌ | Not yet implemented |
 
-- delays (
+### Aircraft Data APIs
+| Source | Endpoint/Data | Status | Notes |
+|--------|--------------|--------|-------|
+| API Ninjas | Basic Aircraft Info | ❌ | Free tier available, limited data |
+| Aviation Stack | Detailed Aircraft Data | ❌ | Expensive, known reliability issues |
 
-https://www.fly.faa.gov/flyfaa/flyfaaindex.jsp
+## Future Integrations
 
-or
+### Insurance Integration
+- SkyWatch.ai API integration planned for insurance services
 
-https://external-api.faa.gov/asws
+### Flight Planning
+- 1800WXBrief.com integration planned for flight plan filing and activation
 
-)
+### Optional Integrations
+- OpenSky Network API for ADS-B data (not required for core functionality)
 
-- airport information (runways, lengths, altitudes, forecasts) incl alternates along route (
+## User Information Requirements
 
-https://external-api.faa.gov/adip
+The platform requires the following user-provided information:
 
-)
+### Pilot Information
+- Ratings and certifications
+- Currency status
+- Personal minimums
+- Goals and preferences
 
-- charts (APR API
+### Flight Information
+- Origin/destination
+- Aircraft details
+- Maintenance status
+- Equipment status
+- Flight rules (VFR/IFR)
+- Time of flight
+- Payload/passenger information
+- Mission goals
 
-https://chatgpt.com/c/6819055f-d7b0-8003-90ca-e028a292a949
+## Important Notes
 
-)
+### Aircraft Performance Data
+- Third-party sources will be used for aircraft performance data
+- All data should be verified against official POH/AFM
+- Prominent warnings will be displayed regarding data verification
+- Data includes:
+  - Fuel planning parameters
+  - Weight & Balance calculations
+  - Service envelope
+  - Takeoff & landing distances
+  - IFR/FIKI capability
+  - Oxygen system requirements
+  - Required equipment lists
 
-# Information submitted by the user
+## Referenced Sources
 
-- pilot information (ratings, currency, minimums, goals)
+### Primary APIs (In Use or Planned)
+- FAA NOTAM API: https://external-api.faa.gov
+- Aviation Weather API: https://aviationweather.gov/data/api/
+- FAA EIM Weather Proximity API
+- FAA ASWS (Delay Info): https://external-api.faa.gov/asws
+- FAA ADIP (Airport Info): https://external-api.faa.gov/adip
+- API Ninjas Aircraft Data: https://api-ninjas.com/api/aircraft
+- Aviation Stack Aircraft Data: https://aviationstack.com/documentation#aircraft_types
+- SkyWatch.ai Insurance API: http://skywatch.ai
+- 1800WXBrief Flight Planning: https://www.1800wxbrief.com/Website/showFlightPlanForm?tab=1
 
-- flight information (origin/destination, aircraft, maintenance/equipment, flight rules, time, payload/passengers/programming, goals)
-
-# Other sources needed
-
-airplane limitations performance etc (needed for fuel planning, W&B, service envelope, takeoff & landing dist, capable of IFR/FIKI, availability of supplemental oxygen, required equipment, etc etc)
-
-- this will likely come from a third-party unofficial source, so the POH takes precedence, lots of warnings to this effect should be displayed
-
-- this one is expensive and buggy:
-
-https://aviationstack.com/documentation#aircraft_types
-
-- this one doesn't have detailed info but it's a good start:
-
-https://api-ninjas.com/api/aircraft
-
-# Future data sources
-
-- Integrate with
-
-http://skywatch.ai/
-
-for insurance when flying
-
-- File flight plan
-
-https://www.1800wxbrief.com/Website/showFlightPlanForm?tab=1
-
-, activate at the right time
-
-# Not needed but relevant
-
-- ADS-B (
-
-https://openskynetwork.github.io/opensky-api/index.html#state-vectors
-
-)
+### Alternative Sources (Not Currently Used)
+- FAA Delay Info (Legacy Web Interface): https://www.fly.faa.gov/flyfaa/flyfaaindex.jsp
+- OpenSky Network (ADS-B Data): https://openskynetwork.github.io/opensky-api/index.html#state-vectors
+- Charts (APR API): Reference link preserved for documentation
