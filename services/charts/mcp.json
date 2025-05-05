@@ -132,6 +132,35 @@
           "client_secret": "${FAA_ADIP_CLIENT_SECRET}"
         }
       }
+    },
+    {
+      "name": "get_terminal_procedures",
+      "description": "Get Terminal Procedures Publication (TPP) for a specific region",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "geoname": {
+            "type": "string",
+            "description": "Geographic region (US or a valid US state name)",
+            "default": "US"
+          },
+          "edition": {
+            "type": "string",
+            "description": "Edition type to retrieve",
+            "enum": ["current", "next", "changeset"],
+            "default": "current"
+          }
+        },
+        "required": ["geoname"]
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://external-api.faa.gov/apra/dtpp/chart",
+        "headers": {
+          "client_id": "${FAA_ADIP_CLIENT_ID}",
+          "client_secret": "${FAA_ADIP_CLIENT_SECRET}"
+        }
+      }
     }
   ]
 } 
