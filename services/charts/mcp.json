@@ -1,0 +1,137 @@
+{
+  "name": "faa-charts",
+  "description": "FAA Aeronautical Product Release API (APRA) providing access to official aviation charts and publications",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "get_sectional_chart",
+      "description": "Get a VFR Sectional Chart for a specific city",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "geoname": {
+            "type": "string",
+            "description": "City name for the chart (e.g., 'New York', 'Los Angeles')",
+            "enum": [
+              "Albuquerque", "Anchorage", "Atlanta", "Bethel", "Billings",
+              "Brownsville", "Cape Lisburne", "Charlotte", "Cheyenne", "Chicago",
+              "Cincinnati", "Cold Bay", "Dallas-Ft Worth", "Dawson", "Denver",
+              "Detroit", "Dutch Harbor", "El Paso", "Fairbanks", "Great Falls",
+              "Green Bay", "Halifax", "Hawaiian Islands", "Houston", "Jacksonville",
+              "Juneau", "Kansas City", "Ketchikan", "Klamath Falls", "Kodiak",
+              "Lake Huron", "Las Vegas", "Los Angeles", "McGrath", "Memphis",
+              "Miami", "Montreal", "New Orleans", "New York", "Nome",
+              "Omaha", "Phoenix", "Point Barrow", "Salt Lake City", "San Antonio",
+              "San Francisco", "Seattle", "Seward", "St Louis", "Twin Cities",
+              "Washington", "Western Aleutian Islands", "Whitehorse", "Wichita"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "description": "Chart edition to retrieve",
+            "enum": ["current", "next"],
+            "default": "current"
+          },
+          "format": {
+            "type": "string",
+            "description": "Chart format (TIFF is georeferenced, PDF is not)",
+            "enum": ["tiff", "pdf"],
+            "default": "pdf"
+          }
+        },
+        "required": ["geoname"]
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://external-api.faa.gov/apra/vfr/sectional/chart",
+        "headers": {
+          "client_id": "${FAA_ADIP_CLIENT_ID}",
+          "client_secret": "${FAA_ADIP_CLIENT_SECRET}"
+        }
+      }
+    },
+    {
+      "name": "get_terminal_chart",
+      "description": "Get a Terminal Area Chart (TAC) for a specific city",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "geoname": {
+            "type": "string",
+            "description": "City name for the chart (e.g., 'New York', 'Los Angeles')",
+            "enum": [
+              "Anchorage-Fairbanks", "Atlanta", "Baltimore-Washington", "Boston",
+              "Charlotte", "Chicago", "Cincinnati", "Cleveland", "Dallas-Ft Worth",
+              "Denver-Colorado Springs", "Detroit", "Houston", "Kansas City",
+              "Las Vegas", "Los Angeles", "Memphis", "Miami", "Minneapolis-St Paul",
+              "New Orleans", "New York", "Philadelphia", "Phoenix", "Pittsburgh",
+              "Puerto Rico-VI", "St Louis", "Salt Lake City", "San Diego",
+              "San Francisco", "Seattle", "Tampa-Orlando"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "description": "Chart edition to retrieve",
+            "enum": ["current", "next"],
+            "default": "current"
+          },
+          "format": {
+            "type": "string",
+            "description": "Chart format (TIFF is georeferenced, PDF is not)",
+            "enum": ["tiff", "pdf"],
+            "default": "pdf"
+          }
+        },
+        "required": ["geoname"]
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://external-api.faa.gov/apra/vfr/tac/chart",
+        "headers": {
+          "client_id": "${FAA_ADIP_CLIENT_ID}",
+          "client_secret": "${FAA_ADIP_CLIENT_SECRET}"
+        }
+      }
+    },
+    {
+      "name": "get_ifr_enroute_chart",
+      "description": "Get an IFR Enroute Chart for a specific region",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "geoname": {
+            "type": "string",
+            "description": "Geographic region for the chart",
+            "enum": ["US", "Alaska", "Pacific", "Caribbean"]
+          },
+          "seriesType": {
+            "type": "string",
+            "description": "Chart series type",
+            "enum": ["low", "high", "area"]
+          },
+          "edition": {
+            "type": "string",
+            "description": "Chart edition to retrieve",
+            "enum": ["current", "next"],
+            "default": "current"
+          },
+          "format": {
+            "type": "string",
+            "description": "Chart format (TIFF is georeferenced, PDF is not)",
+            "enum": ["tiff", "pdf"],
+            "default": "pdf"
+          }
+        },
+        "required": ["geoname", "seriesType"]
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://external-api.faa.gov/apra/enroute/chart",
+        "headers": {
+          "client_id": "${FAA_ADIP_CLIENT_ID}",
+          "client_secret": "${FAA_ADIP_CLIENT_SECRET}"
+        }
+      }
+    }
+  ]
+} 
