@@ -1,0 +1,49 @@
+{
+  "name": "aviation-weather",
+  "description": "Aviation Weather Center API providing access to weather observations and forecasts",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "get_metar",
+      "description": "Get METAR (current weather observation) data for specified stations",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "string",
+            "description": "Comma-separated list of ICAO station identifiers (e.g., 'KJFK,KLAX')"
+          },
+          "hours": {
+            "type": "integer",
+            "description": "Number of hours before current time (1-24)",
+            "minimum": 1,
+            "maximum": 24,
+            "default": 2
+          },
+          "mostRecent": {
+            "type": "boolean",
+            "description": "If true, return only the latest observation for each station",
+            "default": true
+          },
+          "format": {
+            "type": "string",
+            "description": "Response format",
+            "enum": ["xml", "json", "csv"],
+            "default": "xml"
+          }
+        },
+        "required": ["ids"]
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/metar",
+        "headers": {
+          "Accept": "application/${format}"
+        },
+        "query": {
+          "format": "${format}"
+        }
+      }
+    }
+  ]
+} 
