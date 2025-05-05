@@ -4,24 +4,20 @@ Integration platform for various aviation data sources and APIs.
 
 ## API Integration Status
 
-### FAA NOTAM API (external-api.faa.gov)
-| Endpoint/Data | Status | Notes |
-|--------------|--------|-------|
-| NOTAM Data | ❌ | Not yet implemented |
+### FAA NOTAM API
+❌ Not yet implemented
 
-### Aviation Weather API (aviationweather.gov)
-| Endpoint/Data | Status | Notes |
-|--------------|--------|-------|
-| METAR | ✅ | Implemented with tests for single/multiple stations and error handling |
-| TAF | ✅ | Implemented with tests for single/multiple stations and error handling |
-| Forecast Discussion | ✅ | Implemented with tests for WFO-specific and full discussions |
-| CWA (Center Weather Advisory) | ✅ | Implemented with tests for filtering by location and hazard type |
-| MIS (Meteorological Impact Statement) | ✅ | Implemented with tests for filtering by location and handling no active MIS |
-| G-AIRMET | ✅ | Implemented with tests for filtering by type (sierra/tango/zulu) and hazard |
-| SIGMET | ✅ | Implemented with tests for filtering by type (sierra/tango/zulu) and hazard |
-| PIREP | ✅ | Implemented with tests for filtering by type (PIREP/AIREP), location, and weather conditions |
-| Wind & Temperature Aloft | ✅ | Implemented with tests for different regions, altitudes, and forecast periods |
-| Features & Obstacles | ❌ | Available but not prioritized |
+### Aviation Weather API
+✅ G-AIRMET - Implemented with tests for filtering by type (sierra/tango/zulu) and hazard
+✅ SIGMET - Implemented with tests for domestic and international SIGMETs
+✅ PIREP - Implemented with tests for filtering by type (PIREP/AIREP), location, and weather conditions
+✅ Wind & Temperature Aloft - Implemented with tests for different regions, altitudes, and forecast periods
+✅ Station Info - Implemented with tests for retrieving station information by ID and bounding box
+✅ Airport Info - Implemented with tests for retrieving airport information by ID and bounding box
+✅ Navaid Info - Implemented with tests for retrieving navigational aid data by ID and bounding box
+✅ Fix Info - Implemented with tests for retrieving navigational fix data by ID and bounding box
+✅ Feature - Implemented with tests for retrieving features by bounding box in multiple formats
+✅ Obstacle - Implemented with tests for retrieving obstacles by bounding box with data validation
 
 ### FAA EIM Weather Proximity API
 | Endpoint/Data | Status | Notes |

@@ -259,6 +259,152 @@
           "default": "06"
         }
       }
+    },
+    {
+      "name": "stationinfo",
+      "description": "Retrieve station observation location information",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/stationinfo",
+        "query": {
+          "ids": {
+            "type": "string",
+            "description": "Station ID(s) separated by commas",
+            "optional": true
+          },
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "geojson", "xml"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
+    },
+    {
+      "name": "airport",
+      "description": "Retrieve airport information",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/airport",
+        "query": {
+          "ids": {
+            "type": "string",
+            "description": "Station ID(s) separated by commas",
+            "optional": true
+          },
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["decoded", "json", "geojson"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
+    },
+    {
+      "name": "navaid",
+      "description": "Retrieve navigational aid data",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/navaid",
+        "query": {
+          "ids": {
+            "type": "string",
+            "description": "5 letter Fix ID(s) separated by commas",
+            "optional": true
+          },
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "geojson"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
+    },
+    {
+      "name": "fix",
+      "description": "Retrieve navigational fix data",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/fix",
+        "query": {
+          "ids": {
+            "type": "string",
+            "description": "5 letter Fix ID(s) separated by commas",
+            "optional": true
+          },
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "geojson"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
+    },
+    {
+      "name": "feature",
+      "description": "Retrieve feature data",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/feature",
+        "query": {
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "geojson"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
+    },
+    {
+      "name": "obstacle",
+      "description": "Retrieve obstacle data",
+      "http": {
+        "method": "GET",
+        "url": "https://aviationweather.gov/api/data/obstacle",
+        "query": {
+          "bbox": {
+            "type": "string",
+            "description": "Geographic bounding box in format lat0,lon0,lat1,lon1",
+            "optional": true
+          },
+          "format": {
+            "type": "string",
+            "enum": ["raw", "json", "geojson"],
+            "default": "json",
+            "description": "Response format"
+          }
+        }
+      }
     }
   ]
 } 
