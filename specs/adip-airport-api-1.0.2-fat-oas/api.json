@@ -1,0 +1,633 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ADIP Airport API - OpenAPI 3.0",
+    "description": "<h3>OpenAPI 3.0 specifications of the public ADIP airport API. </h3>\nADIP OpenAPI that provides the following capabilities: \n<ul>\n  <li>Airport infrastructure information \n  <li>Search and filtering by any attribute\n  <li>Airport radius search \n  <li>Airport bounding box search \n  <li>Track changes between published versions\n</ul>\n<br/>\nTo visualize this data on a map interface, please visit <a href=\"https://adip.faa.gov\" target=\"_blank\">https://adip.faa.gov</a>.\n",
+    "termsOfService": "http://example.com/tos",
+    "version": "1.0.1",
+    "contact": {
+      "email": "mmenager@cghtech.com"
+    }
+  },
+  "x-amf-servers": [
+    {
+      "url": "https://dev-external-api.faa.gov/adip",
+      "description": "dev url"
+    },
+    {
+      "url": "https://external-api.faa.gov/adip",
+      "description": "prod url"
+    }
+  ],
+  "paths": {
+    "/airport-details/{locId}": {
+      "get": {
+        "operationId": "AirportDetailsFunction",
+        "description": "Get airport details by an airport identifier (for instance SFO, EWR,...) for the current API version. \nResults can be filtered with a JSONPath query (optional).\n",
+        "summary": "Get airport details by an airport identifier",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "details"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "filter",
+            "description": "A JSONPath expression to filter the airport details",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "locId",
+            "description": "The airport identifier",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "$ref": "#/definitions/Details"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-changes/logs": {
+      "get": {
+        "operationId": "AllAirportChangesLogsFunction",
+        "description": "Get all the changes that has been submitted for ANY airport between the \"from\" timestamp until the \"to\" timestamp. \nIf no \"to\" timestamp is provided, the API will returns all the changes until today\n",
+        "summary": "Get all the data changes that has been submitted since a timestamp",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "changes"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "description": "The timestamp from when to fetch the changes",
+            "required": true,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "description": "The timestamp until when to fetch the changes",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-changes/logs/{locId}": {
+      "get": {
+        "operationId": "AirportChangesLogsFunction",
+        "description": "Get all the changes that has been submitted for an airport between the \"from\" timestamp until the \"to\" timestamp. \nIf no \"to\" timestamp is provided, the API will returns all the changes until today. \nif neither \"from\" or \"to\" is provided, the API will return the changes from the last 100 projects that were submitted\n",
+        "summary": "Get data changes that has been submitted for an airport between two timestamps",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "changes"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "description": "The timestamp from when to fetch the changes",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "description": "The timestamp until when to fetch the changes",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "locId",
+            "description": "The airport identifier",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-changes/diff/{locId}": {
+      "get": {
+        "operationId": "AirportChangesDiffFunction",
+        "description": "Get the data differences for an airport between the \"from\" timestamp until the \"to\" timestamp. \nIf no \"to\" timestamp is provided, the API will returns all the differences until today\n",
+        "summary": "Get data differences for an airport between two timestamps",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "changes"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "description": "The timestamp from when to fetch the differences",
+            "required": true,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "description": "The timestamp until when to fetch the differences",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "locId",
+            "description": "The airport identifier",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-list/radius": {
+      "get": {
+        "operationId": "ListRadiusFunction",
+        "description": "Get a list of all airports located in a geographic radius centered on a point provided by lat and lon parameters. \nIf a filter is provided, the list will also include the corresponding matching details.\n",
+        "summary": "Get the list of all airports located in a radius of a specific point (lat/lon)",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "list"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "radius",
+            "description": "The radius",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "lon",
+            "description": "The longitude",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "lat",
+            "description": "The latitude",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "unit",
+            "description": "The unit of the radius",
+            "required": false,
+            "in": "query",
+            "default": "KM",
+            "enum": [
+              "KM",
+              "NM",
+              "M",
+              "FT",
+              "MI"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "A JSONPath expression to filter the airport details",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-list/radius/{locId}": {
+      "get": {
+        "operationId": "ListRadiusForLocIdFunction",
+        "description": "Get a list of all airports located in a geographic radius of the provided airport locId. \nIf a filter is provided, the list will also include the corresponding matching details.\n",
+        "summary": "Get the list of all airports located in a radius of a specific airport",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "list"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "radius",
+            "description": "The radius",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "unit",
+            "description": "The unit of the radius",
+            "required": false,
+            "in": "query",
+            "default": "KM",
+            "enum": [
+              "KM",
+              "NM",
+              "M",
+              "FT",
+              "MI"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "A JSONPath expression to filter the airport details",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "locId",
+            "description": "The airport locId to center the radius search on",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-list/bbox": {
+      "get": {
+        "operationId": "ListBBoxFunction",
+        "description": "Get all the airports located in a bounding box centered on a point provided by lat and lon parameters.",
+        "summary": "Get the list of all airports located in a bounding box of a specific point (lat/lon)",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "list"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "bbox",
+            "description": "The bounding box as an array of [width,height] (for instance [300,400])",
+            "required": true,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lon",
+            "description": "The longitude",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "lat",
+            "description": "The latitude",
+            "required": true,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "unit",
+            "description": "The unit of the radius",
+            "required": false,
+            "in": "query",
+            "default": "KM",
+            "enum": [
+              "KM",
+              "NM",
+              "M",
+              "FT",
+              "MI"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-list/bbox/{locId}": {
+      "get": {
+        "operationId": "ListBBoxForLocIdFunction",
+        "description": "Get all the airports located in a bounding box centered on the provided airport (locId).",
+        "summary": "Get the list of all airports located in a bounding box of an airport",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "list"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "bbox",
+            "description": "The bounding box as an array of [width,height] (for instance [300,400])",
+            "required": true,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "unit",
+            "description": "The unit of the radius",
+            "required": false,
+            "in": "query",
+            "default": "KM",
+            "enum": [
+              "KM",
+              "NM",
+              "M",
+              "FT",
+              "MI"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "locId",
+            "description": "The airport locId to center the radius search on",
+            "required": true,
+            "in": "path",
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    },
+    "/airport-search": {
+      "post": {
+        "operationId": "AirportSearchFunction",
+        "description": "Search airport\n",
+        "summary": "Search for airports",
+        "x-amazon-apigateway-request-validator": "params",
+        "tags": [
+          "search"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "x-amf-mediaType": "application/json",
+            "in": "body",
+            "name": "generated",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 200 response.",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "$ref": "#/definitions/Details"
+            }
+          },
+          "400": {
+            "description": "bad input parameter"
+          }
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-request-validators": {
+    "all": {
+      "validateRequestBody": true,
+      "validateRequestParameters": true
+    },
+    "params": {
+      "validateRequestBody": true,
+      "validateRequestParameters": true
+    },
+    "body": {
+      "validateRequestBody": true,
+      "validateRequestParameters": false
+    }
+  },
+  "definitions": {
+    "Details": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
