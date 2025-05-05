@@ -17,6 +17,5 @@ const makeRequest = async (endpoint, params = {}) => {
 };
 
 module.exports = {
-  makeRequest,
-  getHeaders
+  makeRequest
 }; 
