@@ -28,7 +28,7 @@ describe('Domestic SIGMET API via MCP', () => {
     // This test would be something like:
     /*
     const result = await client.callTool({
-      name: 'get-airsigmet',
+      name: 'get_airsigmet',
       arguments: {
         format: 'xml'
       }
@@ -65,7 +65,7 @@ describe('Domestic SIGMET API via MCP', () => {
     // This test would be something like:
     /*
     const result = await client.callTool({
-      name: 'get-airsigmet',
+      name: 'get_airsigmet',
       arguments: {
         hazard: 'conv',
         format: 'xml'
@@ -100,7 +100,7 @@ describe('Domestic SIGMET API via MCP', () => {
     // This test would be something like:
     /*
     const result = await client.callTool({
-      name: 'get-airsigmet',
+      name: 'get_airsigmet',
       arguments: {
         level: 180,
         format: 'xml'
@@ -138,7 +138,7 @@ describe('Domestic SIGMET API via MCP', () => {
     // This test would be something like:
     /*
     const result = await client.callTool({
-      name: 'get-airsigmet',
+      name: 'get_airsigmet',
       arguments: {
         hazard: 'invalid',
         format: 'xml'

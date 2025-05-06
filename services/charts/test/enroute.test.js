@@ -13,7 +13,7 @@ describe('IFR Enroute Charts API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-enroute')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_enroute')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   test('should return a 200 status code and PDF URL for low altitude chart', async () => {
     const result = await client.callTool({
-      name: 'get-enroute',
+      name: 'get_enroute',
       arguments: {
         geoname: 'US',
         seriesType: 'low',
@@ -50,7 +50,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   test('should return a 200 status code and PDF URL for high altitude chart', async () => {
     const result = await client.callTool({
-      name: 'get-enroute',
+      name: 'get_enroute',
       arguments: {
         geoname: 'US',
         seriesType: 'high',
@@ -76,7 +76,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   test('should return a 200 status code and PDF URL for area chart', async () => {
     const result = await client.callTool({
-      name: 'get-enroute',
+      name: 'get_enroute',
       arguments: {
         geoname: 'US',
         seriesType: 'area',
@@ -102,7 +102,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   test('should handle invalid region', async () => {
     const result = await client.callTool({
-      name: 'get-enroute',
+      name: 'get_enroute',
       arguments: {
         geoname: 'InvalidRegion',
         seriesType: 'low',
@@ -121,7 +121,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   test('should handle invalid series type', async () => {
     const result = await client.callTool({
-      name: 'get-enroute',
+      name: 'get_enroute',
       arguments: {
         geoname: 'US',
         seriesType: 'invalid',

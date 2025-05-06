@@ -1,4 +1,3 @@
-
 import { createWeatherClient } from './helpers.js';
 
 describe('Obstacle API via MCP', () => {
@@ -13,7 +12,7 @@ describe('Obstacle API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-obstacle')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_obstacle')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +23,7 @@ describe('Obstacle API via MCP', () => {
 
   test('retrieves obstacles within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-obstacle',
+      name: 'get_obstacle',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -61,7 +60,7 @@ describe('Obstacle API via MCP', () => {
 
   test('handles invalid bounding box gracefully', async () => {
     const result = await client.callTool({
-      name: 'get-obstacle',
+      name: 'get_obstacle',
       arguments: {
         bbox: 'invalid',
         format: 'json'
@@ -82,7 +81,7 @@ describe('Obstacle API via MCP', () => {
 
     for (const format of formats) {
       const result = await client.callTool({
-        name: 'get-obstacle',
+        name: 'get_obstacle',
         arguments: {
           bbox: '40,-90,45,-85',
           format
@@ -110,7 +109,7 @@ describe('Obstacle API via MCP', () => {
 
   test('verifies obstacle data types', async () => {
     const result = await client.callTool({
-      name: 'get-obstacle',
+      name: 'get_obstacle',
       arguments: {
         bbox: '40,-90,45,-85',
         format: 'json'

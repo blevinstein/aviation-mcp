@@ -5,7 +5,7 @@ Integration platform for various aviation data sources and APIs.
 ## API Integration Status
 
 ### FAA NOTAM API
-❌ Not yet implemented
+🚧 Not yet tested, waiting for API approval
 
 ### Aviation Weather API
 ✅ G-AIRMET - Implemented with tests for filtering by type (sierra/tango/zulu) and hazard
@@ -22,7 +22,7 @@ Integration platform for various aviation data sources and APIs.
 ### FAA EIM Weather Proximity API
 | Endpoint/Data | Status | Notes |
 |--------------|--------|-------|
-| Precipitation Data | ❌ | Not yet implemented |
+| Precipitation Data | 🚧  | Not working |
 
 ### FAA Delay API (external-api.faa.gov/asws)
 | Endpoint/Data | Status | Notes |
@@ -34,10 +34,10 @@ Integration platform for various aviation data sources and APIs.
 ### FAA Airport Information API (external-api.faa.gov/adip)
 | Endpoint/Data | Status | Notes |
 |--------------|--------|-------|
-| Airport Data | ❌ | Not yet implemented |
-| Runway Information | ❌ | Not yet implemented |
-| Airport Forecasts | ❌ | Not yet implemented |
-| Alternate Routes | ❌ | Not yet implemented |
+| Airport Data | 🚧  | Waiting for API access |
+| Runway Information | 🚧  | Waiting for API access |
+| Airport Forecasts | 🚧  | Waiting for API access |
+| Alternate Routes | 🚧  | Waiting for API access |
 
 ### Aircraft Data APIs
 | Source | Endpoint/Data | Status | Notes |

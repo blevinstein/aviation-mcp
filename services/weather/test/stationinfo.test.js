@@ -13,7 +13,7 @@ describe('Station Info API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-station-info')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_station_info')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Station Info API via MCP', () => {
 
   test('retrieves station info for specific stations', async () => {
     const result = await client.callTool({
-      name: 'get-station-info',
+      name: 'get_station_info',
       arguments: {
         ids: 'KJFK,KLAX',
         format: 'json'
@@ -63,7 +63,7 @@ describe('Station Info API via MCP', () => {
 
   test('retrieves stations within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-station-info',
+      name: 'get_station_info',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -102,7 +102,7 @@ describe('Station Info API via MCP', () => {
 
   test('handles invalid station IDs', async () => {
     const result = await client.callTool({
-      name: 'get-station-info',
+      name: 'get_station_info',
       arguments: {
         ids: 'INVALID',
         format: 'json'

@@ -23,7 +23,7 @@ describe('Precipitation API via MCP', () => {
 
   test.skip('should require points array', async () => {
     const result = await client.callTool({
-      name: 'get-precipitation',
+      name: 'get_precipitation',
       arguments: {
         // Missing points array
       }
@@ -35,7 +35,7 @@ describe('Precipitation API via MCP', () => {
 
   test.skip('should require client ID and client secret', async () => {
     const result = await client.callTool({
-      name: 'get-precipitation',
+      name: 'get_precipitation',
       arguments: {
         points: [
           {
@@ -54,7 +54,7 @@ describe('Precipitation API via MCP', () => {
 
   test.skip('should validate point format', async () => {
     const result = await client.callTool({
-      name: 'get-precipitation',
+      name: 'get_precipitation',
       arguments: {
         points: [
           {
@@ -73,7 +73,7 @@ describe('Precipitation API via MCP', () => {
   
   test.skip('should retrieve precipitation data with valid credentials', async () => {
     const result = await client.callTool({
-      name: 'get-precipitation',
+      name: 'get_precipitation',
       arguments: {
         points: [
           {

@@ -12,7 +12,7 @@ describe('Forecast Discussion API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-fcstdisc')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_fcstdisc')).toBe(true);
   });
 
   afterAll(async () => {
@@ -23,7 +23,7 @@ describe('Forecast Discussion API via MCP', () => {
 
   test('should retrieve forecast discussion for a WFO', async () => {
     const result = await client.callTool({
-      name: 'get-fcstdisc',
+      name: 'get_fcstdisc',
       arguments: {
         cwa: 'KOKX',
         type: 'afd',
@@ -42,7 +42,7 @@ describe('Forecast Discussion API via MCP', () => {
 
   test('should handle invalid WFO', async () => {
     const result = await client.callTool({
-      name: 'get-fcstdisc',
+      name: 'get_fcstdisc',
       arguments: {
         cwa: 'INVALID',
         type: 'afd',
@@ -60,7 +60,7 @@ describe('Forecast Discussion API via MCP', () => {
 
   test('should handle full discussion request', async () => {
     const result = await client.callTool({
-      name: 'get-fcstdisc',
+      name: 'get_fcstdisc',
       arguments: {
         cwa: 'KOKX',
         type: 'af',

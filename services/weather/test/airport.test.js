@@ -13,7 +13,7 @@ describe('Airport Info API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-airport-info')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_airport_info')).toBe(true);
   });
 
   afterAll(async () => {
@@ -74,7 +74,7 @@ describe('Airport Info API via MCP', () => {
 
   test('retrieves airport info for specific airports', async () => {
     const result = await client.callTool({
-      name: 'get-airport-info',
+      name: 'get_airport_info',
       arguments: {
         ids: 'KJFK,KLAX',
         format: 'json'
@@ -106,7 +106,7 @@ describe('Airport Info API via MCP', () => {
 
   test('retrieves airports within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-airport-info',
+      name: 'get_airport_info',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -138,7 +138,7 @@ describe('Airport Info API via MCP', () => {
 
   test('handles invalid airport IDs', async () => {
     const result = await client.callTool({
-      name: 'get-airport-info',
+      name: 'get_airport_info',
       arguments: {
         ids: 'INVALID',
         format: 'json'
@@ -165,7 +165,7 @@ describe('Airport Info API via MCP', () => {
   test('returns proper format based on format parameter', async () => {
     // Test JSON format
     const jsonResult = await client.callTool({
-      name: 'get-airport-info',
+      name: 'get_airport_info',
       arguments: {
         ids: 'KJFK',
         format: 'json'
@@ -178,7 +178,7 @@ describe('Airport Info API via MCP', () => {
 
     // Test XML format
     const xmlResult = await client.callTool({
-      name: 'get-airport-info',
+      name: 'get_airport_info',
       arguments: {
         ids: 'KJFK',
         format: 'xml'

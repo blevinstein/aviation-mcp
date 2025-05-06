@@ -13,7 +13,7 @@ describe('Center Weather Advisory API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-cwa')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_cwa')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Center Weather Advisory API via MCP', () => {
 
   test('should retrieve all CWAs', async () => {
     const result = await client.callTool({
-      name: 'get-cwa',
+      name: 'get_cwa',
       arguments: {
         format: 'xml'
       }
@@ -49,7 +49,7 @@ describe('Center Weather Advisory API via MCP', () => {
 
   test('should filter CWAs by location', async () => {
     const result = await client.callTool({
-      name: 'get-cwa',
+      name: 'get_cwa',
       arguments: {
         loc: 'ZAB',
         format: 'xml'
@@ -77,7 +77,7 @@ describe('Center Weather Advisory API via MCP', () => {
 
   test('should filter CWAs by hazard type', async () => {
     const result = await client.callTool({
-      name: 'get-cwa',
+      name: 'get_cwa',
       arguments: {
         hazard: 'ts',
         format: 'xml'
@@ -105,7 +105,7 @@ describe('Center Weather Advisory API via MCP', () => {
 
   test('should handle no results', async () => {
     const result = await client.callTool({
-      name: 'get-cwa',
+      name: 'get_cwa',
       arguments: {
         loc: 'INVALID',
         format: 'xml'

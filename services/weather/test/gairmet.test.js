@@ -13,7 +13,7 @@ describe('Graphical AIRMET API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-gairmet')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_gairmet')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Graphical AIRMET API via MCP', () => {
 
   test('should retrieve all G-AIRMETs', async () => {
     const result = await client.callTool({
-      name: 'get-gairmet',
+      name: 'get_gairmet',
       arguments: {
         format: 'xml'
       }
@@ -54,7 +54,7 @@ describe('Graphical AIRMET API via MCP', () => {
 
   test('should filter G-AIRMETs by type', async () => {
     const result = await client.callTool({
-      name: 'get-gairmet',
+      name: 'get_gairmet',
       arguments: {
         type: 'tango',
         format: 'xml'
@@ -82,7 +82,7 @@ describe('Graphical AIRMET API via MCP', () => {
 
   test('should filter G-AIRMETs by hazard', async () => {
     const result = await client.callTool({
-      name: 'get-gairmet',
+      name: 'get_gairmet',
       arguments: {
         hazard: 'turb-hi',
         format: 'xml'
@@ -110,7 +110,7 @@ describe('Graphical AIRMET API via MCP', () => {
 
   test('should handle invalid type by returning all G-AIRMETs', async () => {
     const result = await client.callTool({
-      name: 'get-gairmet',
+      name: 'get_gairmet',
       arguments: {
         type: 'invalid',
         format: 'xml'

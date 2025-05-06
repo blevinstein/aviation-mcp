@@ -49,7 +49,7 @@ const PRECIPITATION_INTENSITY = {
 // Define the tools directly
 const PRECIPITATION_TOOLS: Tool[] = [
   {
-    name: "get-precipitation",
+    name: "get_precipitation",
     description: "Retrieves precipitation intensity data for specified coordinates and times",
     inputSchema: {
       type: "object",
@@ -197,7 +197,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   
   try {
     switch (request.params.name) {
-      case "get-precipitation": {
+      case "get_precipitation": {
         const {
           points,
           includeDescription,

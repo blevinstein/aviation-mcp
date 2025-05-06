@@ -29,7 +29,7 @@ function debugLog(...args: any[]) {
 // Define the tools directly
 const WEATHER_TOOLS: Tool[] = [
   {
-    name: "get-metar",
+    name: "get_metar",
     description: "Retrieves current METAR data for one or more stations",
     inputSchema: {
       type: "object",
@@ -58,7 +58,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-taf",
+    name: "get_taf",
     description: "Retrieves TAF forecasts for one or more stations",
     inputSchema: {
       type: "object",
@@ -82,7 +82,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-pirep",
+    name: "get_pirep",
     description: "Retrieves pilot reports (PIREPs) for a specific region",
     inputSchema: {
       type: "object",
@@ -107,7 +107,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-windtemp",
+    name: "get_windtemp",
     description: "Retrieves wind and temperature data for specific altitudes",
     inputSchema: {
       type: "object",
@@ -137,7 +137,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-station-info",
+    name: "get_station_info",
     description: "Retrieves information about weather stations",
     inputSchema: {
       type: "object",
@@ -160,7 +160,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-airport-info",
+    name: "get_airport_info",
     description: "Retrieves information about airports",
     inputSchema: {
       type: "object",
@@ -183,7 +183,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-navaid-info",
+    name: "get_navaid_info",
     description: "Retrieves information about navigational aids",
     inputSchema: {
       type: "object",
@@ -206,7 +206,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-fix-info",
+    name: "get_fix_info",
     description: "Retrieves information about navigational fixes",
     inputSchema: {
       type: "object",
@@ -230,7 +230,7 @@ const WEATHER_TOOLS: Tool[] = [
   },
   // Add new tools here
   {
-    name: "get-isigmet",
+    name: "get_isigmet",
     description: "Retrieves International SIGMET information",
     inputSchema: {
       type: "object",
@@ -253,7 +253,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-cwa",
+    name: "get_cwa",
     description: "Retrieves Center Weather Advisory information",
     inputSchema: {
       type: "object",
@@ -276,7 +276,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-fcstdisc",
+    name: "get_fcstdisc",
     description: "Retrieves forecast discussions from Weather Forecast Offices",
     inputSchema: {
       type: "object",
@@ -302,7 +302,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-feature",
+    name: "get_feature",
     description: "Retrieves feature information within a specified area",
     inputSchema: {
       type: "object",
@@ -321,7 +321,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-obstacle",
+    name: "get_obstacle",
     description: "Retrieves obstacle information within a specified area",
     inputSchema: {
       type: "object",
@@ -340,7 +340,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-mis",
+    name: "get_mis",
     description: "Retrieves Meteorological Impact Statement information",
     inputSchema: {
       type: "object",
@@ -359,7 +359,7 @@ const WEATHER_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-gairmet",
+    name: "get_gairmet",
     description: "Retrieves Graphical AIRMET information",
     inputSchema: {
       type: "object",
@@ -892,7 +892,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   
   try {
     switch (request.params.name) {
-      case "get-metar": {
+      case "get_metar": {
         const { ids, format, hours, mostRecent } = request.params.arguments as {
           ids: string;
           format?: string;
@@ -902,7 +902,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleMetar(ids, format, hours, mostRecent);
       }
 
-      case "get-taf": {
+      case "get_taf": {
         const { ids, format, hours_before } = request.params.arguments as {
           ids: string;
           format?: string;
@@ -911,7 +911,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleTaf(ids, format, hours_before);
       }
 
-      case "get-pirep": {
+      case "get_pirep": {
         const { type, bbox, format } = request.params.arguments as {
           type?: string;
           bbox?: string;
@@ -920,7 +920,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handlePirep(type, bbox, format);
       }
 
-      case "get-windtemp": {
+      case "get_windtemp": {
         const { region, level, fcst, format } = request.params.arguments as {
           region?: string;
           level?: string;
@@ -930,7 +930,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleWindTemp(region, level, fcst, format);
       }
 
-      case "get-station-info": {
+      case "get_station_info": {
         const { ids, bbox, format } = request.params.arguments as {
           ids?: string;
           bbox?: string;
@@ -939,7 +939,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleStationInfo(ids, bbox, format);
       }
 
-      case "get-airport-info": {
+      case "get_airport_info": {
         const { ids, bbox, format } = request.params.arguments as {
           ids?: string;
           bbox?: string;
@@ -948,7 +948,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleAirportInfo(ids, bbox, format);
       }
 
-      case "get-navaid-info": {
+      case "get_navaid_info": {
         const { ids, bbox, format } = request.params.arguments as {
           ids?: string;
           bbox?: string;
@@ -957,7 +957,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleNavaidInfo(ids, bbox, format);
       }
 
-      case "get-fix-info": {
+      case "get_fix_info": {
         const { ids, bbox, format } = request.params.arguments as {
           ids?: string;
           bbox?: string;
@@ -967,7 +967,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       
       // Handle new tools
-      case "get-isigmet": {
+      case "get_isigmet": {
         const { hazard, level, format } = request.params.arguments as {
           hazard?: string;
           level?: number;
@@ -976,7 +976,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleIsigmet(hazard, level, format);
       }
       
-      case "get-cwa": {
+      case "get_cwa": {
         const { loc, hazard, format } = request.params.arguments as {
           loc?: string;
           hazard?: string;
@@ -985,7 +985,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleCwa(loc, hazard, format);
       }
       
-      case "get-fcstdisc": {
+      case "get_fcstdisc": {
         const { cwa, type, format } = request.params.arguments as {
           cwa: string;
           type?: string;
@@ -994,7 +994,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleFcstdisc(cwa, type, format);
       }
 
-      case "get-feature": {
+      case "get_feature": {
         const { bbox, format } = request.params.arguments as {
           bbox?: string;
           format?: string;
@@ -1002,7 +1002,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleFeature(bbox, format);
       }
 
-      case "get-obstacle": {
+      case "get_obstacle": {
         const { bbox, format } = request.params.arguments as {
           bbox?: string;
           format?: string;
@@ -1010,7 +1010,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleObstacle(bbox, format);
       }
 
-      case "get-mis": {
+      case "get_mis": {
         const { loc, format } = request.params.arguments as {
           loc?: string;
           format?: string;
@@ -1018,7 +1018,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleMis(loc, format);
       }
 
-      case "get-gairmet": {
+      case "get_gairmet": {
         const { type, hazard, format } = request.params.arguments as {
           type?: string;
           hazard?: string;

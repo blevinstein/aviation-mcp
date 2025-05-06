@@ -13,7 +13,7 @@ describe('TAF API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-taf')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_taf')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('TAF API via MCP', () => {
 
   test('should retrieve TAF data for a single station', async () => {
     const result = await client.callTool({
-      name: 'get-taf',
+      name: 'get_taf',
       arguments: {
         ids: 'KJFK',
         format: 'xml'
@@ -46,7 +46,7 @@ describe('TAF API via MCP', () => {
 
   test('should retrieve TAF data for multiple stations', async () => {
     const result = await client.callTool({
-      name: 'get-taf',
+      name: 'get_taf',
       arguments: {
         ids: 'KJFK,KLAX',
         format: 'xml'
@@ -69,7 +69,7 @@ describe('TAF API via MCP', () => {
 
   test('should handle invalid station', async () => {
     const result = await client.callTool({
-      name: 'get-taf',
+      name: 'get_taf',
       arguments: {
         ids: 'INVALID',
         format: 'xml'
@@ -91,7 +91,7 @@ describe('TAF API via MCP', () => {
 
   test('should handle historical data request', async () => {
     const result = await client.callTool({
-      name: 'get-taf',
+      name: 'get_taf',
       arguments: {
         ids: 'KJFK',
         format: 'xml',

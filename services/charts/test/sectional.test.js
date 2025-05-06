@@ -13,7 +13,7 @@ describe('Sectional Charts API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-sectional')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_sectional')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Sectional Charts API via MCP', () => {
 
   test('should return a 200 status code and PDF URL for a valid city name', async () => {
     const result = await client.callTool({
-      name: 'get-sectional',
+      name: 'get_sectional',
       arguments: {
         geoname: 'New York',
         format: 'pdf'
@@ -53,7 +53,7 @@ describe('Sectional Charts API via MCP', () => {
 
   test('should handle invalid city name by defaulting to US', async () => {
     const result = await client.callTool({
-      name: 'get-sectional',
+      name: 'get_sectional',
       arguments: {
         geoname: 'InvalidCity123',
         format: 'pdf'
@@ -73,7 +73,7 @@ describe('Sectional Charts API via MCP', () => {
 
   test('should handle invalid format by defaulting to ZIP', async () => {
     const result = await client.callTool({
-      name: 'get-sectional',
+      name: 'get_sectional',
       arguments: {
         geoname: 'New York',
         format: 'invalid'
@@ -95,7 +95,7 @@ describe('Sectional Charts API via MCP', () => {
     const cities = ['Los Angeles', 'Chicago', 'Miami', 'Seattle'];
     for (const city of cities) {
       const result = await client.callTool({
-        name: 'get-sectional',
+        name: 'get_sectional',
         arguments: {
           geoname: city,
           format: 'pdf'

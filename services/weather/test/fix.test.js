@@ -13,7 +13,7 @@ describe('Fix Info API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-fix-info')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_fix_info')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Fix Info API via MCP', () => {
 
   test('retrieves fix info for specific fixes', async () => {
     const result = await client.callTool({
-      name: 'get-fix-info',
+      name: 'get_fix_info',
       arguments: {
         ids: 'BARBQ,ORD',
         format: 'json'
@@ -62,7 +62,7 @@ describe('Fix Info API via MCP', () => {
 
   test('retrieves fixes within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-fix-info',
+      name: 'get_fix_info',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -100,7 +100,7 @@ describe('Fix Info API via MCP', () => {
 
   test('handles invalid fix IDs', async () => {
     const result = await client.callTool({
-      name: 'get-fix-info',
+      name: 'get_fix_info',
       arguments: {
         ids: 'INVALID',
         format: 'json'

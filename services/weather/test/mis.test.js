@@ -13,7 +13,7 @@ describe('MIS API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-mis')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_mis')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('MIS API via MCP', () => {
 
   test('should retrieve MIS data', async () => {
     const result = await client.callTool({
-      name: 'get-mis',
+      name: 'get_mis',
       arguments: {
         format: 'xml'
       }
@@ -48,7 +48,7 @@ describe('MIS API via MCP', () => {
 
   test('should filter MIS by location', async () => {
     const result = await client.callTool({
-      name: 'get-mis',
+      name: 'get_mis',
       arguments: {
         loc: 'ZOB',
         format: 'xml'
@@ -72,7 +72,7 @@ describe('MIS API via MCP', () => {
 
   test('should handle invalid location', async () => {
     const result = await client.callTool({
-      name: 'get-mis',
+      name: 'get_mis',
       arguments: {
         loc: 'INVALID',
         format: 'xml'

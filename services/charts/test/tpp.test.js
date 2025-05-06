@@ -13,7 +13,7 @@ describe('Terminal Procedures Publication API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-tpp')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_tpp')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Terminal Procedures Publication API via MCP', () => {
 
   test('should return a 200 status code and ZIP URL for a valid region', async () => {
     const result = await client.callTool({
-      name: 'get-tpp',
+      name: 'get_tpp',
       arguments: {
         icao: 'KJFK'
       }
@@ -56,7 +56,7 @@ describe('Terminal Procedures Publication API via MCP', () => {
 
   it('should handle invalid airport code', async () => {
     const result = await client.callTool({
-      name: 'get-tpp',
+      name: 'get_tpp',
       arguments: {
         icao: 'INVALID',
         chartType: 'ALL'
@@ -82,7 +82,7 @@ describe('Terminal Procedures Publication API via MCP', () => {
 
   test('should handle IAP chart type', async () => {
     const result = await client.callTool({
-      name: 'get-tpp',
+      name: 'get_tpp',
       arguments: {
         icao: 'KJFK',
         chartType: 'IAP'

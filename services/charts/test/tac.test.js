@@ -13,7 +13,7 @@ describe('Terminal Area Charts API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-tac')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_tac')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Terminal Area Charts API via MCP', () => {
 
   test('should return a 200 status code and PDF URL for a valid city name', async () => {
     const result = await client.callTool({
-      name: 'get-tac',
+      name: 'get_tac',
       arguments: {
         geoname: 'New York',
         format: 'pdf'
@@ -54,7 +54,7 @@ describe('Terminal Area Charts API via MCP', () => {
 
   test('should handle invalid city name', async () => {
     const result = await client.callTool({
-      name: 'get-tac',
+      name: 'get_tac',
       arguments: {
         geoname: 'InvalidCity123',
         format: 'pdf'
@@ -72,7 +72,7 @@ describe('Terminal Area Charts API via MCP', () => {
 
   test('should handle invalid format', async () => {
     const result = await client.callTool({
-      name: 'get-tac',
+      name: 'get_tac',
       arguments: {
         geoname: 'New York',
         format: 'invalid'
@@ -92,7 +92,7 @@ describe('Terminal Area Charts API via MCP', () => {
     const cities = ['Los Angeles', 'Chicago', 'Miami', 'Seattle'];
     for (const city of cities) {
       const result = await client.callTool({
-        name: 'get-tac',
+        name: 'get_tac',
         arguments: {
           geoname: city,
           format: 'pdf'

@@ -29,7 +29,7 @@ function debugLog(...args: any[]) {
 // Define the tools directly
 const NOTAM_TOOLS: Tool[] = [
   {
-    name: "get-notams",
+    name: "get_notams",
     description: "Retrieves NOTAMs based on specified filters",
     inputSchema: {
       type: "object",
@@ -118,16 +118,7 @@ const NOTAM_TOOLS: Tool[] = [
           default: 1,
           description: "The page number"
         },
-        clientId: {
-          type: "string",
-          description: "The client ID for API authentication"
-        },
-        clientSecret: {
-          type: "string",
-          description: "The client secret for API authentication"
-        }
       },
-      required: ["clientId", "clientSecret"]
     }
   }
 ];
@@ -153,8 +144,6 @@ async function handleNotams(
   sortOrder?: string,
   pageSize?: number,
   pageNum?: number,
-  clientId?: string,
-  clientSecret?: string
 ) {
   // Set default format if not provided
   responseFormat = responseFormat || 'geoJson';
@@ -185,7 +174,7 @@ async function handleNotams(
   const url = `${baseUrl}?${urlParams.toString()}`;
   
   // Check if required auth credentials are provided
-  if (!clientId || !clientSecret) {
+  if (!process.env.FAA_CLIENT_ID || !process.env.FAA_CLIENT_SECRET) {
     throw new Error('Client ID and Client Secret are required for NOTAM API authentication');
   }
   
@@ -194,8 +183,8 @@ async function handleNotams(
     method: 'GET',
     headers: {
       'Accept': 'application/json',
-      'client_id': clientId,
-      'client_secret': clientSecret
+      'client_id': process.env.FAA_CLIENT_ID,
+      'client_secret': process.env.FAA_CLIENT_SECRET
     }
   });
   
@@ -242,7 +231,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   
   try {
     switch (request.params.name) {
-      case "get-notams": {
+      case "get_notams": {
         const {
           responseFormat,
           icaoLocation,
@@ -261,8 +250,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           sortOrder,
           pageSize,
           pageNum,
-          clientId,
-          clientSecret
         } = request.params.arguments;
         
         return await handleNotams(
@@ -283,8 +270,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           sortOrder,
           pageSize,
           pageNum,
-          clientId,
-          clientSecret
         );
       }
       default:

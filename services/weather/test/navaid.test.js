@@ -13,7 +13,7 @@ describe('Navaid Info API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-navaid-info')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_navaid_info')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('Navaid Info API via MCP', () => {
 
   test('retrieves navaid info for specific navaids', async () => {
     const result = await client.callTool({
-      name: 'get-navaid-info',
+      name: 'get_navaid_info',
       arguments: {
         ids: 'MCI,ORD',
         format: 'json'
@@ -64,7 +64,7 @@ describe('Navaid Info API via MCP', () => {
 
   test('retrieves navaids within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-navaid-info',
+      name: 'get_navaid_info',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -104,7 +104,7 @@ describe('Navaid Info API via MCP', () => {
 
   test('handles invalid navaid IDs', async () => {
     const result = await client.callTool({
-      name: 'get-navaid-info',
+      name: 'get_navaid_info',
       arguments: {
         ids: 'INVALID',
         format: 'json'

@@ -1,4 +1,3 @@
-
 import { createWeatherClient } from './helpers.js';
 
 describe('Wind & Temperature Aloft API via MCP', () => {
@@ -13,7 +12,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-windtemp')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_windtemp')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +23,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
 
   test('should retrieve forecasts for all regions', async () => {
     const result = await client.callTool({
-      name: 'get-windtemp',
+      name: 'get_windtemp',
       arguments: {
         region: 'all',
         level: 'low',
@@ -43,7 +42,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
 
   test('should retrieve forecasts for specific region', async () => {
     const result = await client.callTool({
-      name: 'get-windtemp',
+      name: 'get_windtemp',
       arguments: {
         region: 'bos',
         level: 'low',
@@ -62,7 +61,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
 
   test('should retrieve high altitude forecasts', async () => {
     const result = await client.callTool({
-      name: 'get-windtemp',
+      name: 'get_windtemp',
       arguments: {
         region: 'all',
         level: 'high',
@@ -84,7 +83,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
     const fcstPeriods = ['06', '12', '24'];
     for (const fcst of fcstPeriods) {
       const result = await client.callTool({
-        name: 'get-windtemp',
+        name: 'get_windtemp',
         arguments: {
           region: 'all',
           level: 'low',
@@ -104,7 +103,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
 
   test('should handle Alaska region forecasts', async () => {
     const result = await client.callTool({
-      name: 'get-windtemp',
+      name: 'get_windtemp',
       arguments: {
         region: 'alaska',
         level: 'low',
@@ -123,7 +122,7 @@ describe('Wind & Temperature Aloft API via MCP', () => {
 
   test('should handle Hawaii region forecasts', async () => {
     const result = await client.callTool({
-      name: 'get-windtemp',
+      name: 'get_windtemp',
       arguments: {
         region: 'hawaii',
         level: 'low',

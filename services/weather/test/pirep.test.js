@@ -13,7 +13,7 @@ describe('PIREP API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-pirep')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_pirep')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('PIREP API via MCP', () => {
 
   test('should retrieve aircraft reports', async () => {
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml'
       }
@@ -56,7 +56,7 @@ describe('PIREP API via MCP', () => {
 
   test('should filter by report type PIREP', async () => {
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml',
         type: 'pirep'
@@ -81,7 +81,7 @@ describe('PIREP API via MCP', () => {
 
   test('should filter by report type AIREP', async () => {
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml',
         type: 'airep'
@@ -107,7 +107,7 @@ describe('PIREP API via MCP', () => {
   test('should filter by bounding box', async () => {
     const bbox = '-75,40,-70,45'; // Roughly covers parts of New England
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml',
         bbox
@@ -137,7 +137,7 @@ describe('PIREP API via MCP', () => {
 
   test('should handle reports with turbulence conditions', async () => {
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml',
         type: 'pirep'
@@ -173,7 +173,7 @@ describe('PIREP API via MCP', () => {
 
   test('should handle reports with icing conditions', async () => {
     const result = await client.callTool({
-      name: 'get-pirep',
+      name: 'get_pirep',
       arguments: {
         format: 'xml',
         type: 'pirep'

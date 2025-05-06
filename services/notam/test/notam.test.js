@@ -23,7 +23,7 @@ describe('NOTAM API via MCP', () => {
 
   test.skip('should require client ID and client secret', async () => {
     const result = await client.callTool({
-      name: 'get-notams',
+      name: 'get_notams',
       arguments: {
         icaoLocation: 'KJFK'
         // No credentials
@@ -36,7 +36,7 @@ describe('NOTAM API via MCP', () => {
 
   test.skip('should include API parameters in error message', async () => {
     const result = await client.callTool({
-      name: 'get-notams',
+      name: 'get_notams',
       arguments: {
         icaoLocation: 'KJFK',
         featureType: 'RWY',
@@ -53,7 +53,7 @@ describe('NOTAM API via MCP', () => {
   // This test would require valid API credentials to run
   test.skip('should retrieve NOTAMs when valid credentials are provided', async () => {
     const result = await client.callTool({
-      name: 'get-notams',
+      name: 'get_notams',
       arguments: {
         icaoLocation: 'KJFK',
         clientId: process.env.NOTAM_CLIENT_ID,

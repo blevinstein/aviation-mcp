@@ -20,7 +20,7 @@ interface Tool {
 // Define the tools directly
 const CHARTS_TOOLS: Tool[] = [
   {
-    name: "get-sectional",
+    name: "get_sectional",
     description: "Retrieves sectional charts",
     inputSchema: {
       type: "object",
@@ -40,7 +40,7 @@ const CHARTS_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-tac",
+    name: "get_tac",
     description: "Retrieves Terminal Area Charts (TAC)",
     inputSchema: {
       type: "object",
@@ -60,7 +60,7 @@ const CHARTS_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-enroute",
+    name: "get_enroute",
     description: "Retrieves IFR Enroute Charts",
     inputSchema: {
       type: "object",
@@ -86,7 +86,7 @@ const CHARTS_TOOLS: Tool[] = [
     }
   },
   {
-    name: "get-tpp",
+    name: "get_tpp",
     description: "Retrieves Terminal Procedures Publication (TPP) charts",
     inputSchema: {
       type: "object",
@@ -214,7 +214,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   try {
     switch (request.params.name) {
-      case "get-sectional": {
+      case "get_sectional": {
         const { geoname, format } = request.params.arguments as {
           geoname: string;
           format?: string;
@@ -222,7 +222,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleSectional(geoname, format);
       }
 
-      case "get-tac": {
+      case "get_tac": {
         const { geoname, format } = request.params.arguments as {
           geoname: string;
           format?: string;
@@ -230,7 +230,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleTAC(geoname, format);
       }
 
-      case "get-enroute": {
+      case "get_enroute": {
         const { geoname, seriesType, format } = request.params.arguments as {
           geoname: string;
           seriesType?: string;
@@ -239,7 +239,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         return await handleEnroute(geoname, seriesType, format);
       }
 
-      case "get-tpp": {
+      case "get_tpp": {
         const { icao, chartType, format } = request.params.arguments as {
           icao: string;
           chartType?: string;

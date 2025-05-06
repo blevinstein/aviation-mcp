@@ -1,4 +1,3 @@
-
 import { createWeatherClient } from './helpers.js';
 
 describe('Feature API via MCP', () => {
@@ -13,7 +12,7 @@ describe('Feature API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-feature')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_feature')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +23,7 @@ describe('Feature API via MCP', () => {
 
   test('retrieves features within bounding box', async () => {
     const result = await client.callTool({
-      name: 'get-feature',
+      name: 'get_feature',
       arguments: {
         bbox: '40,-90,45,-85', // Chicago area
         format: 'json'
@@ -60,7 +59,7 @@ describe('Feature API via MCP', () => {
 
   test('handles invalid bounding box gracefully', async () => {
     const result = await client.callTool({
-      name: 'get-feature',
+      name: 'get_feature',
       arguments: {
         bbox: 'invalid',
         format: 'json'
@@ -81,7 +80,7 @@ describe('Feature API via MCP', () => {
 
     for (const format of formats) {
       const result = await client.callTool({
-        name: 'get-feature',
+        name: 'get_feature',
         arguments: {
           bbox: '40,-90,45,-85',
           format

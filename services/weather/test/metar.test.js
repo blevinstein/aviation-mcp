@@ -13,7 +13,7 @@ describe('METAR API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-metar')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_metar')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('METAR API via MCP', () => {
 
   test('should return METAR data for a single station', async () => {
     const result = await client.callTool({
-      name: 'get-metar',
+      name: 'get_metar',
       arguments: {
         ids: 'KJFK',
         format: 'xml'
@@ -50,7 +50,7 @@ describe('METAR API via MCP', () => {
 
   test('should return METAR data for multiple stations', async () => {
     const result = await client.callTool({
-      name: 'get-metar',
+      name: 'get_metar',
       arguments: {
         ids: 'KJFK,KLAX',
         format: 'xml'
@@ -77,7 +77,7 @@ describe('METAR API via MCP', () => {
 
   test('should handle invalid station', async () => {
     const result = await client.callTool({
-      name: 'get-metar',
+      name: 'get_metar',
       arguments: {
         ids: 'INVALID',
         format: 'xml'
@@ -100,7 +100,7 @@ describe('METAR API via MCP', () => {
 
   test('should handle historical data request', async () => {
     const result = await client.callTool({
-      name: 'get-metar',
+      name: 'get_metar',
       arguments: {
         ids: 'KJFK',
         hours: 3,

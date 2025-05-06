@@ -13,7 +13,7 @@ describe('International SIGMET API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-isigmet')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_isigmet')).toBe(true);
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe('International SIGMET API via MCP', () => {
 
   test('should retrieve all international SIGMETs', async () => {
     const result = await client.callTool({
-      name: 'get-isigmet',
+      name: 'get_isigmet',
       arguments: {
         format: 'xml'
       }
@@ -56,7 +56,7 @@ describe('International SIGMET API via MCP', () => {
 
   test('should filter international SIGMETs by hazard type', async () => {
     const result = await client.callTool({
-      name: 'get-isigmet',
+      name: 'get_isigmet',
       arguments: {
         hazard: 'turb',
         format: 'xml'
@@ -83,7 +83,7 @@ describe('International SIGMET API via MCP', () => {
 
   test('should filter international SIGMETs by flight level', async () => {
     const result = await client.callTool({
-      name: 'get-isigmet',
+      name: 'get_isigmet',
       arguments: {
         level: 180,
         format: 'xml'
@@ -114,7 +114,7 @@ describe('International SIGMET API via MCP', () => {
 
   test('should handle invalid hazard type by returning all SIGMETs', async () => {
     const result = await client.callTool({
-      name: 'get-isigmet',
+      name: 'get_isigmet',
       arguments: {
         hazard: 'invalid',
         format: 'xml'
