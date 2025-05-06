@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import dotenv from "dotenv";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -17,6 +18,8 @@ interface Tool {
   inputSchema: any;
 }
 
+dotenv.config();
+
 // Enable debug logging
 const DEBUG = process.env.DEBUG === 'true';
 
@@ -25,9 +28,6 @@ function debugLog(...args: any[]) {
     console.error('[DEBUG]', ...args);
   }
 }
-
-// Use dirname properly for ESM
-const currentDir = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Define precipitation intensity codes
@@ -81,16 +81,8 @@ const PRECIPITATION_TOOLS: Tool[] = [
           default: false,
           description: "Whether to include human-readable descriptions for precipitation codes"
         },
-        clientId: {
-          type: "string",
-          description: "The client ID for API authentication"
-        },
-        clientSecret: {
-          type: "string",
-          description: "The client secret for API authentication"
-        }
       },
-      required: ["points", "clientId", "clientSecret"]
+      required: ["points"]
     }
   }
 ];
@@ -101,11 +93,9 @@ const PRECIPITATION_TOOLS: Tool[] = [
 async function handlePrecipitation(
   points: Array<{lat: number, lon: number, timeStr: string}>,
   includeDescription: boolean = false,
-  clientId?: string,
-  clientSecret?: string
 ) {
   // Check if required auth credentials are provided
-  if (!clientId || !clientSecret) {
+  if (!process.env.FAA_CLIENT_ID || !process.env.FAA_CLIENT_SECRET) {
     throw new Error('Client ID and Client Secret are required for EIM API authentication');
   }
 
@@ -129,19 +119,21 @@ async function handlePrecipitation(
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'client_id': clientId,
-        'client_secret': clientSecret
+        'client_id': process.env.FAA_CLIENT_ID,
+        'client_secret': process.env.FAA_CLIENT_SECRET
       },
       body: JSON.stringify(pointsWithProdId)
     });
     
     if (!response.ok) {
       const errorText = await response.text();
+      debugLog(`EIM API Error: ${errorText}`);
       throw new Error(`EIM API Error (${response.status}): ${errorText}`);
     }
     
     // Parse the response data
-    const intensityCodes = await response.json();
+    const intensityCodes: number[] = await response.json() as number[];
+    debugLog(`EIM API Response: ${JSON.stringify(intensityCodes)}`);
 
     // Add descriptions if requested
     let result;
@@ -166,6 +158,7 @@ async function handlePrecipitation(
       isError: false
     };
   } catch (error) {
+    debugLog(`Error: ${error.message}`);
     return {
         content: [
             {
@@ -208,15 +201,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         const {
           points,
           includeDescription,
-          clientId,
-          clientSecret
         } = request.params.arguments;
         
         return await handlePrecipitation(
           points,
           includeDescription,
-          clientId,
-          clientSecret
         );
       }
       default:

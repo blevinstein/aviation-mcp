@@ -9,10 +9,10 @@ This MCP integration provides access to the FAA's Airport Information API (ADIP)
    cp .env.example .env
    ```
 
-2. Add your FAA ADIP API credentials to `.env`:
+2. Add your FAA API credentials to `.env`:
    ```
-   FAA_ADIP_CLIENT_ID=your_client_id_here
-   FAA_ADIP_CLIENT_SECRET=your_client_secret_here
+   FAA_CLIENT_ID=your_client_id_here
+   FAA_CLIENT_SECRET=your_client_secret_here
    ```
 
 3. The MCP tools will automatically use these credentials for authentication.
@@ -54,13 +54,13 @@ You can test the API directly using curl:
 
 ```bash
 # Get airport details
-curl -H "client_id: $FAA_ADIP_CLIENT_ID" \
-     -H "client_secret: $FAA_ADIP_CLIENT_SECRET" \
+curl -H "client_id: $FAA_CLIENT_ID" \
+     -H "client_secret: $FAA_CLIENT_SECRET" \
      https://external-api.faa.gov/adip/airport-details/KJFK
 
 # Search by radius
-curl -H "client_id: $FAA_ADIP_CLIENT_ID" \
-     -H "client_secret: $FAA_ADIP_CLIENT_SECRET" \
+curl -H "client_id: $FAA_CLIENT_ID" \
+     -H "client_secret: $FAA_CLIENT_SECRET" \
      "https://external-api.faa.gov/adip/airport-list/radius?lat=40.6413&lon=-73.7781&radius=50&unit=KM"
 ```
 
@@ -70,14 +70,14 @@ The integration requires the following environment variables:
 
 | Variable | Description |
 |----------|-------------|
-| `FAA_ADIP_CLIENT_ID` | Your FAA ADIP API client ID |
-| `FAA_ADIP_CLIENT_SECRET` | Your FAA ADIP API client secret |
+| `FAA_CLIENT_ID` | Your FAA API client ID |
+| `FAA_CLIENT_SECRET` | Your FAA API client secret |
 
 These variables are used in the HTTP headers for API authentication.
 
 ## Notes
 
 - This is a read-only service providing static airport information
-- All data is sourced from the FAA's official ADIP API
+- All data is sourced from the FAA's official API
 - Rate limits and usage restrictions apply as per FAA's terms of service
 - Optional JSONPath filters can be applied to customize the response data 

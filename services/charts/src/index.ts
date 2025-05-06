@@ -17,9 +17,6 @@ interface Tool {
   inputSchema: any;
 }
 
-// Use dirname properly for ESM
-const currentDir = dirname(fileURLToPath(import.meta.url));
-
 // Define the tools directly
 const CHARTS_TOOLS: Tool[] = [
   {

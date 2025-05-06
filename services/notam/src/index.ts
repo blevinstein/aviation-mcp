@@ -26,9 +26,6 @@ function debugLog(...args: any[]) {
   }
 }
 
-// Use dirname properly for ESM
-const currentDir = dirname(fileURLToPath(import.meta.url));
-
 // Define the tools directly
 const NOTAM_TOOLS: Tool[] = [
   {
