@@ -5,13 +5,17 @@
   "author": "Brian Levinstein <blevinstein@gmail.com>",
   "license": "MIT",
   "bin": {
-    "aviation-weather-mcp": "dist/services/weather/src/index.js"
+    "aviation-weather-mcp": "dist/services/weather/src/index.js",
+    "aviation-charts-mcp": "dist/services/charts/src/index.js"
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start:weather": "node services/weather/src/index.ts",
+    "start:charts": "node services/charts/src/index.ts",
     "build:weather": "tsc -p tsconfig.json && chmod +x dist/services/weather/src/index.js",
-    "prepare": "npm run build:weather"
+    "build:charts": "tsc -p tsconfig.json && chmod +x dist/services/charts/src/index.js",
+    "build": "npm run build:weather && npm run build:charts",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

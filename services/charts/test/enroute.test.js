@@ -1,18 +1,44 @@
-const { makeRequest } = require('./helpers');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createChartsClient } from './helpers.js';
 
-describe('IFR Enroute Charts API', () => {
+describe('IFR Enroute Charts API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createChartsClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-enroute')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
+
   test('should return a 200 status code and PDF URL for low altitude chart', async () => {
-    const { status, text } = await makeRequest('/enroute/chart', {
-      geoname: 'US',
-      seriesType: 'low',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-enroute',
+      arguments: {
+        geoname: 'US',
+        seriesType: 'low',
+        format: 'pdf'
+      }
     });
     
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    const result = await parseXmlResponse(text);
-    const productSet = result.productSet;
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const productSet = parsedResponse.productSet;
     
     // Check status code
     expect(productSet.status[0].$.code).toBe('200');
@@ -23,16 +49,22 @@ describe('IFR Enroute Charts API', () => {
   });
 
   test('should return a 200 status code and PDF URL for high altitude chart', async () => {
-    const { status, text } = await makeRequest('/enroute/chart', {
-      geoname: 'US',
-      seriesType: 'high',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-enroute',
+      arguments: {
+        geoname: 'US',
+        seriesType: 'high',
+        format: 'pdf'
+      }
     });
     
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    const result = await parseXmlResponse(text);
-    const productSet = result.productSet;
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const productSet = parsedResponse.productSet;
     
     // Check status code
     expect(productSet.status[0].$.code).toBe('200');
@@ -43,16 +75,22 @@ describe('IFR Enroute Charts API', () => {
   });
 
   test('should return a 200 status code and PDF URL for area chart', async () => {
-    const { status, text } = await makeRequest('/enroute/chart', {
-      geoname: 'US',
-      seriesType: 'area',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-enroute',
+      arguments: {
+        geoname: 'US',
+        seriesType: 'area',
+        format: 'pdf'
+      }
     });
     
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    const result = await parseXmlResponse(text);
-    const productSet = result.productSet;
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const productSet = parsedResponse.productSet;
     
     // Check status code
     expect(productSet.status[0].$.code).toBe('200');
@@ -63,26 +101,40 @@ describe('IFR Enroute Charts API', () => {
   });
 
   test('should handle invalid region', async () => {
-    const { status, text } = await makeRequest('/enroute/chart', {
-      geoname: 'InvalidRegion',
-      seriesType: 'low',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-enroute',
+      arguments: {
+        geoname: 'InvalidRegion',
+        seriesType: 'low',
+        format: 'pdf'
+      }
     });
-
-    expect(status).toBe(404);
-    const result = await parseXmlResponse(text);
-    expect(result.productSet.status[0].$.code).toBe('404');
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    expect(parsedResponse.productSet.status[0].$.code).toBe('404');
   });
 
   test('should handle invalid series type', async () => {
-    const { status, text } = await makeRequest('/enroute/chart', {
-      geoname: 'US',
-      seriesType: 'invalid',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-enroute',
+      arguments: {
+        geoname: 'US',
+        seriesType: 'invalid',
+        format: 'pdf'
+      }
     });
-
-    expect(status).toBe(404);
-    const result = await parseXmlResponse(text);
-    expect(result.productSet.status[0].$.code).toBe('404');
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    expect(parsedResponse.productSet.status[0].$.code).toBe('404');
   });
 }); 
