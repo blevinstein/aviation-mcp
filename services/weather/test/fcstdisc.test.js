@@ -50,10 +50,7 @@ describe('Forecast Discussion API via MCP', () => {
 
     expect(result.isError).toBeFalsy();
     expect(result.content).toBeDefined();
-    expect(result.content[0].type).toBe('text');
-    
-    const text = result.content[0].text;
-    expect(text).toContain('No AFD available');
+    expect(result.content[0].type).toContain('No AFD available');
   });
 
   test('should handle full discussion request', async () => {

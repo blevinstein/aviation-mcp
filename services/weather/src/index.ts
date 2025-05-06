@@ -95,7 +95,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Geographic bounding box (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
         },
         format: {
           type: "string",
@@ -718,18 +718,15 @@ async function handleFcstdisc(cwa: string, type?: string, format?: string) {
   if (type) {
     url.searchParams.append("type", type);
   }
-  
-  url.searchParams.append("format", format || "xml");
 
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
-  debugLog('Response status:', response.status);
+  const data = await response.text();
 
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: data,
     }],
     isError: false
   };
