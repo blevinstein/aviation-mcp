@@ -11,6 +11,14 @@
     "precipitation": {
       "command": "npx",
       "args": ["ts-node", "--esm", "-T", "./services/precipitation/src/index.ts"]
+    },
+    "airports": {
+      "command": "npx",
+      "args": ["ts-node", "--esm", "-T", "./services/airports/src/index.ts"]
+    },
+    "notam": {
+      "command": "npx",
+      "args": ["ts-node", "--esm", "-T", "./services/notam/src/index.ts"]
     }
   }
 } 
