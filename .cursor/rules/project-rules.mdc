@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+NEVER create a separate jest.config file, always put these in package.json.
+NEVER `cd` to another directory, always stay in the project root.
+NEVER use CommonJS, use ES6 JS for everything as much as possible.
