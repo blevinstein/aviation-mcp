@@ -1,0 +1,256 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Notam API",
+    "description": "A Notice to Airmen (NOTAM) is the real-time notification component of the FAA's Aeronautical Information System and contains up-to-date information related to any change in the National Airspace System (NAS).",
+    "version": "v1"
+  },
+  "host": "{domain}",
+  "basePath": "/notamapi/{version}",
+  "x-amf-baseUriParameters": {
+    "domain": {
+      "displayName": "Domain Name (by environment)",
+      "default": "external-api.faa.gov",
+      "enum": [
+        "dev-cloud-1b-alb-api.faa.gov",
+        "external-api.faa.gov"
+      ],
+      "type": "string"
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/notams": {
+      "get": {
+        "operationId": "Notams",
+        "description": "Geolocation in json Format",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "responseFormat",
+            "description": "AIXM 5.1: The AIXM 5.1 endpoint adheres to the Aeronautical Information Exchange Model; the international standard format for the exchange of static and dynamic aeronautical information.\nGeoJSON: The GeoJSON API endpoint provides a simplified interface focused on the core NOTAM elements and expanded geometries - NOTAMs are enhanced with geometries for Temporary Flight Restriction (TFR) NOTAMs and Special Activity Airspace (SAA) NOTAMs.\nAIDAP: The AIDAP endpoint provides NOTAM data that matches the legacy AIDAP format, supporting a transition to the NOTAM API for users of the legacy service.",
+            "required": false,
+            "in": "query",
+            "default": "geoJson",
+            "enum": [
+              "aixm",
+              "geoJson",
+              "aidap"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "icaoLocation",
+            "description": "The icao location criteria. (ex. KIAD for Dulles International Airport)",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "domesticLocation",
+            "description": "The domestic location criteria. (ex. IAD for Dulles International Airport)",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "notamType",
+            "description": "The NOTAM type criteria. The NOTAM type is 'N' for a 'New' NOTAM, 'R' for a 'Replaced' NOTAM, or 'C' for a 'Canceled' NOTAM",
+            "required": false,
+            "in": "query",
+            "enum": [
+              "N",
+              "R",
+              "C"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "classification",
+            "description": "The NOTAM classification criteria available values INTL, MIL, DOM, LMIL, FDC",
+            "required": false,
+            "in": "query",
+            "enum": [
+              "INTL",
+              "MIL",
+              "DOM",
+              "LMIL",
+              "FDC"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "notamNumber",
+            "description": "The NOTAM number criteria. (ex. CK0000/01)",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "effectiveStartDate",
+            "description": "The effective start date criteria",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "effectiveEndDate",
+            "description": "The effective end date criteria",
+            "required": false,
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "featureType",
+            "description": "The feature types criteria. available values RWY, TWY, APRON, AD, OBST, NAV, COM, SVC, AIRSPACE, ODP, SID, STAR, CHART,                      DATA, DVA, IAP, VFP, ROUTE, SPECIAL, SECURITY, MILITARY, INTERNATIONAL",
+            "required": false,
+            "in": "query",
+            "enum": [
+              "RWY",
+              "TWY",
+              "APRON",
+              "AD",
+              "OBST",
+              "NAV",
+              "COM",
+              "SVC",
+              "AIRSPACE",
+              "ODP",
+              "SID",
+              "STAR",
+              "CHART",
+              "DATA",
+              "DVA",
+              "IAP",
+              "VFP",
+              "ROUTE",
+              "SPECIAL",
+              "SECURITY",
+              "MILITARY",
+              "INTERNATIONAL"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "locationLongitude",
+            "description": "The location longitude criteria. (ex. -151.24)",
+            "required": false,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "locationLatitude",
+            "description": "The location latitude criteria. (ex. 60.57)",
+            "required": false,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "locationRadius",
+            "description": "The location radius criteria. (max:100)",
+            "required": false,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "lastUpdatedDate",
+            "description": "The last update date criteria.",
+            "required": false,
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "sortBy",
+            "description": "The name of the field to sort by available values icaoLocation, domesticLocation, notamType, notamNumber,                                    effectiveStartDate, effectiveEndDate, featureType",
+            "required": false,
+            "in": "query",
+            "enum": [
+              "icaoLocation",
+              "domesticLocation",
+              "notamType",
+              "notamNumber",
+              "effectiveStartDate",
+              "effectiveEndDate",
+              "featureType"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "sortOrder",
+            "description": "The sort order available values Asc, Desc",
+            "required": false,
+            "in": "query",
+            "enum": [
+              "Asc",
+              "Desc"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The page size. (max:1000)",
+            "required": false,
+            "in": "query",
+            "default": 50,
+            "type": "number"
+          },
+          {
+            "name": "pageNum",
+            "description": "The page number",
+            "required": false,
+            "in": "query",
+            "default": 1,
+            "type": "number"
+          },
+          {
+            "name": "client_id",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "client_secret",
+            "required": true,
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "x-amf-mediaType": "application/json",
+            "schema": {
+              "example": {
+                "pageSize": 10,
+                "pageNum": 3,
+                "totalCount": 124,
+                "totalPages": 13,
+                "items": [
+                  {
+                    "type": "Point",
+                    "geometry": {
+                      "type": "Point",
+                      "coordinates": [
+                        0
+                      ]
+                    },
+                    "properties": {
+                      "name": "Dinagat Islands"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
