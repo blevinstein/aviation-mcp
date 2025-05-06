@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import dotenv from 'dotenv';
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -14,6 +15,8 @@ interface Tool {
   description: string;
   inputSchema: any;
 }
+
+dotenv.config();
 
 const DEBUG = process.env.DEBUG === 'true';
 function debugLog(...args: any[]) {
