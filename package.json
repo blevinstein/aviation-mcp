@@ -10,11 +10,16 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:weather": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/weather/test",
+    "test:airports": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/airports/test",
+    "test:charts": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/charts/test",
     "start:weather": "node services/weather/src/index.ts",
     "start:charts": "node services/charts/src/index.ts",
+    "start:airports": "node services/airports/src/index.ts",
     "build:weather": "tsc -p tsconfig.json && chmod +x dist/services/weather/src/index.js",
     "build:charts": "tsc -p tsconfig.json && chmod +x dist/services/charts/src/index.js",
-    "build": "npm run build:weather && npm run build:charts",
+    "build:airports": "tsc -p tsconfig.json && chmod +x dist/services/airports/src/index.js",
+    "build": "npm run build:weather && npm run build:charts && npm run build:airports",
     "prepare": "npm run build"
   },
   "devDependencies": {

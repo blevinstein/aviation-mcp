@@ -1,54 +1,135 @@
-const fetch = require('node-fetch');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createWeatherClient } from './helpers.js';
 
-describe('Navaid API', () => {
-  const baseUrl = 'https://aviationweather.gov/api/data/navaid';
+describe('Navaid Info API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createWeatherClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-navaid-info')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
 
   test('retrieves navaid info for specific navaids', async () => {
-    const ids = 'MCI,ORD';
-    const response = await fetch(`${baseUrl}?format=json&ids=${ids}`);
+    const result = await client.callTool({
+      name: 'get-navaid-info',
+      arguments: {
+        ids: 'MCI,ORD',
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    // If navaids are found, verify their structure
-    if (data.navaids && data.navaids.length > 0) {
-      const navaid = data.navaids[0];
-      expect(navaid).toHaveProperty('id');
-      expect(navaid).toHaveProperty('type');
-      expect(navaid).toHaveProperty('latitude');
-      expect(navaid).toHaveProperty('longitude');
-      expect(navaid).toHaveProperty('elevation');
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      expect(data).toBeDefined();
+      
+      // If navaids are found, verify their structure
+      if (data.navaids && data.navaids.length > 0) {
+        const navaid = data.navaids[0];
+        expect(navaid).toHaveProperty('id');
+        expect(navaid).toHaveProperty('type');
+        expect(navaid).toHaveProperty('latitude');
+        expect(navaid).toHaveProperty('longitude');
+        expect(navaid).toHaveProperty('elevation');
+      }
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
     }
   });
 
   test('retrieves navaids within bounding box', async () => {
-    const bbox = '40,-90,45,-85'; // Chicago area
-    const response = await fetch(`${baseUrl}?format=json&bbox=${bbox}`);
+    const result = await client.callTool({
+      name: 'get-navaid-info',
+      arguments: {
+        bbox: '40,-90,45,-85', // Chicago area
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    // If navaids are found, verify their structure
-    if (data.navaids && data.navaids.length > 0) {
-      const navaid = data.navaids[0];
-      expect(navaid).toHaveProperty('id');
-      expect(navaid).toHaveProperty('type');
-      expect(navaid).toHaveProperty('latitude');
-      expect(navaid).toHaveProperty('longitude');
-      expect(navaid).toHaveProperty('elevation');
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      expect(data).toBeDefined();
+      
+      // If navaids are found, verify their structure
+      if (data.navaids && data.navaids.length > 0) {
+        const navaid = data.navaids[0];
+        expect(navaid).toHaveProperty('id');
+        expect(navaid).toHaveProperty('type');
+        expect(navaid).toHaveProperty('latitude');
+        expect(navaid).toHaveProperty('longitude');
+        expect(navaid).toHaveProperty('elevation');
+      }
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
     }
   });
 
   test('handles invalid navaid IDs', async () => {
-    const ids = 'INVALID';
-    const response = await fetch(`${baseUrl}?format=json&ids=${ids}`);
+    const result = await client.callTool({
+      name: 'get-navaid-info',
+      arguments: {
+        ids: 'INVALID',
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    // API should handle invalid IDs gracefully
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      // API should handle invalid IDs gracefully
+      expect(data).toBeDefined();
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
+    }
   });
 }); 

@@ -1,12 +1,40 @@
-const { makeRequest } = require('./helpers');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createWeatherClient } from './helpers.js';
 
-describe('PIREP API', () => {
+describe('PIREP API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createWeatherClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-pirep')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
+
   test('should retrieve aircraft reports', async () => {
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml'
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     
@@ -27,11 +55,19 @@ describe('PIREP API', () => {
   });
 
   test('should filter by report type PIREP', async () => {
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml',
-      type: 'pirep'
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml',
+        type: 'pirep'
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     
@@ -44,11 +80,19 @@ describe('PIREP API', () => {
   });
 
   test('should filter by report type AIREP', async () => {
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml',
-      type: 'airep'
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml',
+        type: 'airep'
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     
@@ -62,11 +106,19 @@ describe('PIREP API', () => {
 
   test('should filter by bounding box', async () => {
     const bbox = '-75,40,-70,45'; // Roughly covers parts of New England
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml',
-      bbox
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml',
+        bbox
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     
@@ -84,11 +136,19 @@ describe('PIREP API', () => {
   });
 
   test('should handle reports with turbulence conditions', async () => {
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml',
-      type: 'pirep'
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml',
+        type: 'pirep'
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     
@@ -112,11 +172,19 @@ describe('PIREP API', () => {
   });
 
   test('should handle reports with icing conditions', async () => {
-    const { status, text } = await makeRequest('/api/data/pirep', {
-      format: 'xml',
-      type: 'pirep'
+    const result = await client.callTool({
+      name: 'get-pirep',
+      arguments: {
+        format: 'xml',
+        type: 'pirep'
+      }
     });
-    expect(status).toBe(200);
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     const response = await parseXmlResponse(text);
     const reports = response.response.data[0].AircraftReport;
     

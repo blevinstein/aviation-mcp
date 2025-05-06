@@ -1,50 +1,131 @@
-const fetch = require('node-fetch');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createWeatherClient } from './helpers.js';
 
-describe('Fix API', () => {
-  const baseUrl = 'https://aviationweather.gov/api/data/fix';
+describe('Fix Info API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createWeatherClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-fix-info')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
 
   test('retrieves fix info for specific fixes', async () => {
-    const ids = 'BARBQ,ORD';
-    const response = await fetch(`${baseUrl}?format=json&ids=${ids}`);
+    const result = await client.callTool({
+      name: 'get-fix-info',
+      arguments: {
+        ids: 'BARBQ,ORD',
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    // If fixes are found, verify their structure
-    if (data.fixes && data.fixes.length > 0) {
-      const fix = data.fixes[0];
-      expect(fix).toHaveProperty('id');
-      expect(fix).toHaveProperty('latitude');
-      expect(fix).toHaveProperty('longitude');
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      expect(data).toBeDefined();
+      
+      // If fixes are found, verify their structure
+      if (data.fixes && data.fixes.length > 0) {
+        const fix = data.fixes[0];
+        expect(fix).toHaveProperty('id');
+        expect(fix).toHaveProperty('latitude');
+        expect(fix).toHaveProperty('longitude');
+      }
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
     }
   });
 
   test('retrieves fixes within bounding box', async () => {
-    const bbox = '40,-90,45,-85'; // Chicago area
-    const response = await fetch(`${baseUrl}?format=json&bbox=${bbox}`);
+    const result = await client.callTool({
+      name: 'get-fix-info',
+      arguments: {
+        bbox: '40,-90,45,-85', // Chicago area
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    // If fixes are found, verify their structure
-    if (data.fixes && data.fixes.length > 0) {
-      const fix = data.fixes[0];
-      expect(fix).toHaveProperty('id');
-      expect(fix).toHaveProperty('latitude');
-      expect(fix).toHaveProperty('longitude');
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      expect(data).toBeDefined();
+      
+      // If fixes are found, verify their structure
+      if (data.fixes && data.fixes.length > 0) {
+        const fix = data.fixes[0];
+        expect(fix).toHaveProperty('id');
+        expect(fix).toHaveProperty('latitude');
+        expect(fix).toHaveProperty('longitude');
+      }
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
     }
   });
 
   test('handles invalid fix IDs', async () => {
-    const ids = 'INVALID';
-    const response = await fetch(`${baseUrl}?format=json&ids=${ids}`);
+    const result = await client.callTool({
+      name: 'get-fix-info',
+      arguments: {
+        ids: 'INVALID',
+        format: 'json'
+      }
+    });
     
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    // API should handle invalid IDs gracefully
-    expect(data).toBeDefined();
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
+    // Parse the JSON response
+    try {
+      const data = JSON.parse(text);
+      // API should handle invalid IDs gracefully
+      expect(data).toBeDefined();
+    } catch (error) {
+      // If the response isn't valid JSON, check if it's an XML response
+      if (text.includes('<?xml')) {
+        const response = await parseXmlResponse(text);
+        expect(response).toBeDefined();
+      } else {
+        // Neither JSON nor XML - fail the test
+        fail('Response was neither valid JSON nor XML');
+      }
+    }
   });
 }); 

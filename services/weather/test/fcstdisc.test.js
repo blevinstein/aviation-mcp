@@ -1,37 +1,78 @@
-const { makeRequest } = require('./helpers');
+import { createWeatherClient } from './helpers.js';
 
-describe('Forecast Discussion API', () => {
+describe('Forecast Discussion API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createWeatherClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-fcstdisc')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
+
   test('should retrieve forecast discussion for a WFO', async () => {
-    const { status, text } = await makeRequest('/api/data/fcstdisc', {
-      cwa: 'KOKX',
-      type: 'afd',
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-fcstdisc',
+      arguments: {
+        cwa: 'KOKX',
+        type: 'afd',
+        format: 'xml'
+      }
     });
 
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     expect(text).toContain('National Weather Service');
     expect(text).toContain('TAF period');
   });
 
   test('should handle invalid WFO', async () => {
-    const { status, text } = await makeRequest('/api/data/fcstdisc', {
-      cwa: 'INVALID',
-      type: 'afd',
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-fcstdisc',
+      arguments: {
+        cwa: 'INVALID',
+        type: 'afd',
+        format: 'xml'
+      }
     });
 
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     expect(text).toContain('No AFD available');
   });
 
   test('should handle full discussion request', async () => {
-    const { status, text } = await makeRequest('/api/data/fcstdisc', {
-      cwa: 'KOKX',
-      type: 'af',
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-fcstdisc',
+      arguments: {
+        cwa: 'KOKX',
+        type: 'af',
+        format: 'xml'
+      }
     });
 
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const text = result.content[0].text;
     expect(text).toContain('National Weather Service');
   });
 }); 

@@ -17,6 +17,15 @@ interface Tool {
   inputSchema: any;
 }
 
+// Enable debug logging
+const DEBUG = process.env.DEBUG === 'true';
+
+function debugLog(...args: any[]) {
+  if (DEBUG) {
+    console.error('[DEBUG]', ...args);
+  }
+}
+
 // Use dirname properly for ESM
 const currentDir = dirname(fileURLToPath(import.meta.url));
 
@@ -108,11 +117,18 @@ const WEATHER_TOOLS: Tool[] = [
       properties: {
         region: {
           type: "string",
-          description: "Geographic region"
+          enum: ["all", "us", "bos", "mia", "chi", "dfw", "slc", "sfo", "alaska", "hawaii", "other_pac"],
+          description: "Geographic region: all=All sites, bos=Northeast, mia=Southeast, chi=North central, dfw=South central, slc=Rocky Mountain, sfo=Pacific Coast, alaska=Alaska, hawaii=Hawaii, other_pac=Western Pacific"
         },
-        altitude: {
+        level: {
           type: "string",
-          description: "Altitude in feet"
+          enum: ["low", "high"],
+          description: "Altitude level: low or high"
+        },
+        fcst: {
+          type: "string",
+          enum: ["06", "12", "24"],
+          description: "Forecast cycle: 06, 12, or 24 hours"
         },
         format: {
           type: "string",
@@ -120,8 +136,7 @@ const WEATHER_TOOLS: Tool[] = [
           default: "xml",
           description: "Response format"
         }
-      },
-      required: ["region", "altitude"]
+      }
     }
   },
   {
@@ -130,7 +145,7 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        id: {
+        ids: {
           type: "string",
           description: "Station ID"
         },
@@ -153,7 +168,7 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        id: {
+        ids: {
           type: "string",
           description: "Airport ID"
         },
@@ -176,7 +191,7 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        id: {
+        ids: {
           type: "string",
           description: "Navaid ID"
         },
@@ -199,7 +214,7 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        id: {
+        ids: {
           type: "string",
           description: "Fix ID"
         },
@@ -215,11 +230,86 @@ const WEATHER_TOOLS: Tool[] = [
         }
       }
     }
+  },
+  // Add new tools here
+  {
+    name: "get-isigmet",
+    description: "Retrieves International SIGMET information",
+    inputSchema: {
+      type: "object",
+      properties: {
+        hazard: {
+          type: "string",
+          description: "Hazard type to filter by (e.g., 'turb', 'ice', 'tc')"
+        },
+        level: {
+          type: "integer",
+          description: "Flight level to filter by"
+        },
+        format: {
+          type: "string",
+          enum: ["xml", "json"],
+          default: "xml",
+          description: "Response format"
+        }
+      }
+    }
+  },
+  {
+    name: "get-cwa",
+    description: "Retrieves Center Weather Advisory information",
+    inputSchema: {
+      type: "object",
+      properties: {
+        loc: {
+          type: "string",
+          description: "ARTCC identifier (e.g., 'ZAB', 'ZNY')"
+        },
+        hazard: {
+          type: "string",
+          description: "Hazard type to filter by (e.g., 'ts', 'turb')"
+        },
+        format: {
+          type: "string",
+          enum: ["xml", "json"],
+          default: "xml",
+          description: "Response format"
+        }
+      }
+    }
+  },
+  {
+    name: "get-fcstdisc",
+    description: "Retrieves forecast discussions from Weather Forecast Offices",
+    inputSchema: {
+      type: "object",
+      properties: {
+        cwa: {
+          type: "string",
+          description: "Weather Forecast Office identifier (e.g., 'KOKX')"
+        },
+        type: {
+          type: "string",
+          enum: ["afd", "af"],
+          default: "afd",
+          description: "Discussion type: Aviation Forecast Discussion (afd) or Area Forecast (af)"
+        },
+        format: {
+          type: "string",
+          enum: ["xml", "json"],
+          default: "xml",
+          description: "Response format"
+        }
+      },
+      required: ["cwa"]
+    }
   }
 ];
 
 // Tool handlers
 async function handleMetar(ids: string, format?: string, hours?: number, mostRecent?: boolean) {
+  debugLog('handleMetar called with:', { ids, format, hours, mostRecent });
+  
   const url = new URL("https://aviationweather.gov/api/data/metar");
   url.searchParams.append("ids", ids);
   url.searchParams.append("format", format || "xml");
@@ -232,8 +322,17 @@ async function handleMetar(ids: string, format?: string, hours?: number, mostRec
     url.searchParams.append("mostRecent", mostRecent.toString());
   }
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+  
+  // Only log a preview of the data to avoid console clutter
+  if (typeof data === 'string') {
+    debugLog('Response data preview:', data.substring(0, 200) + '...');
+  } else {
+    debugLog('Response data keys:', Object.keys(data));
+  }
 
   return {
     content: [{
@@ -245,6 +344,8 @@ async function handleMetar(ids: string, format?: string, hours?: number, mostRec
 }
 
 async function handleTaf(ids: string, format?: string, hours_before?: number) {
+  debugLog('handleTaf called with:', { ids, format, hours_before });
+  
   const url = new URL("https://aviationweather.gov/api/data/taf");
   url.searchParams.append("ids", ids);
   url.searchParams.append("format", format || "xml");
@@ -253,8 +354,17 @@ async function handleTaf(ids: string, format?: string, hours_before?: number) {
     url.searchParams.append("hours_before", hours_before.toString());
   }
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+  
+  // Only log a preview of the data to avoid console clutter
+  if (typeof data === 'string') {
+    debugLog('Response data preview:', data.substring(0, 200) + '...');
+  } else {
+    debugLog('Response data keys:', Object.keys(data));
+  }
 
   return {
     content: [{
@@ -266,6 +376,8 @@ async function handleTaf(ids: string, format?: string, hours_before?: number) {
 }
 
 async function handlePirep(type?: string, bbox?: string, format?: string) {
+  debugLog('handlePirep called with:', { type, bbox, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/pirep");
   
   if (type) {
@@ -278,8 +390,10 @@ async function handlePirep(type?: string, bbox?: string, format?: string) {
   
   url.searchParams.append("format", format || "xml");
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -290,14 +404,27 @@ async function handlePirep(type?: string, bbox?: string, format?: string) {
   };
 }
 
-async function handleWindTemp(region: string, altitude: string, format?: string) {
+async function handleWindTemp(region?: string, level?: string, fcst?: string, format?: string) {
+  debugLog('handleWindTemp called with:', { region, level, fcst, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/windtemp");
-  url.searchParams.append("region", region);
-  url.searchParams.append("altitude", altitude);
-  url.searchParams.append("format", format || "xml");
+  
+  if (region) {
+    url.searchParams.append("region", region);
+  }
+  
+  if (level) {
+    url.searchParams.append("level", level);
+  }
+  
+  if (fcst) {
+    url.searchParams.append("fcst", fcst);
+  }
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -308,11 +435,13 @@ async function handleWindTemp(region: string, altitude: string, format?: string)
   };
 }
 
-async function handleStationInfo(id?: string, bbox?: string, format?: string) {
+async function handleStationInfo(ids?: string, bbox?: string, format?: string) {
+  debugLog('handleStationInfo called with:', { ids, bbox, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/stationinfo");
   
-  if (id) {
-    url.searchParams.append("id", id);
+  if (ids) {
+    url.searchParams.append("ids", ids);
   }
   
   if (bbox) {
@@ -321,8 +450,10 @@ async function handleStationInfo(id?: string, bbox?: string, format?: string) {
   
   url.searchParams.append("format", format || "xml");
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -333,11 +464,13 @@ async function handleStationInfo(id?: string, bbox?: string, format?: string) {
   };
 }
 
-async function handleAirportInfo(id?: string, bbox?: string, format?: string) {
+async function handleAirportInfo(ids?: string, bbox?: string, format?: string) {
+  debugLog('handleAirportInfo called with:', { ids, bbox, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/airport");
   
-  if (id) {
-    url.searchParams.append("id", id);
+  if (ids) {
+    url.searchParams.append("ids", ids);
   }
   
   if (bbox) {
@@ -346,8 +479,10 @@ async function handleAirportInfo(id?: string, bbox?: string, format?: string) {
   
   url.searchParams.append("format", format || "xml");
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -358,11 +493,13 @@ async function handleAirportInfo(id?: string, bbox?: string, format?: string) {
   };
 }
 
-async function handleNavaidInfo(id?: string, bbox?: string, format?: string) {
+async function handleNavaidInfo(ids?: string, bbox?: string, format?: string) {
+  debugLog('handleNavaidInfo called with:', { ids, bbox, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/navaid");
   
-  if (id) {
-    url.searchParams.append("id", id);
+  if (ids) {
+    url.searchParams.append("ids", ids);
   }
   
   if (bbox) {
@@ -371,8 +508,10 @@ async function handleNavaidInfo(id?: string, bbox?: string, format?: string) {
   
   url.searchParams.append("format", format || "xml");
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -383,11 +522,13 @@ async function handleNavaidInfo(id?: string, bbox?: string, format?: string) {
   };
 }
 
-async function handleFixInfo(id?: string, bbox?: string, format?: string) {
+async function handleFixInfo(ids?: string, bbox?: string, format?: string) {
+  debugLog('handleFixInfo called with:', { ids, bbox, format });
+  
   const url = new URL("https://aviationweather.gov/api/data/fix");
   
-  if (id) {
-    url.searchParams.append("id", id);
+  if (ids) {
+    url.searchParams.append("ids", ids);
   }
   
   if (bbox) {
@@ -396,8 +537,95 @@ async function handleFixInfo(id?: string, bbox?: string, format?: string) {
   
   url.searchParams.append("format", format || "xml");
 
+  debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+
+  return {
+    content: [{
+      type: "text",
+      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+    }],
+    isError: false
+  };
+}
+
+// New handlers for the added tools
+async function handleIsigmet(hazard?: string, level?: number, format?: string) {
+  debugLog('handleIsigmet called with:', { hazard, level, format });
+  
+  const url = new URL("https://aviationweather.gov/api/data/isigmet");
+  
+  if (hazard) {
+    url.searchParams.append("hazard", hazard);
+  }
+  
+  if (level !== undefined) {
+    url.searchParams.append("level", level.toString());
+  }
+  
+  url.searchParams.append("format", format || "xml");
+
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+
+  return {
+    content: [{
+      type: "text",
+      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+    }],
+    isError: false
+  };
+}
+
+async function handleCwa(loc?: string, hazard?: string, format?: string) {
+  debugLog('handleCwa called with:', { loc, hazard, format });
+  
+  const url = new URL("https://aviationweather.gov/api/data/cwa");
+  
+  if (loc) {
+    url.searchParams.append("loc", loc);
+  }
+  
+  if (hazard) {
+    url.searchParams.append("hazard", hazard);
+  }
+  
+  url.searchParams.append("format", format || "xml");
+
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+
+  return {
+    content: [{
+      type: "text",
+      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+    }],
+    isError: false
+  };
+}
+
+async function handleFcstdisc(cwa: string, type?: string, format?: string) {
+  debugLog('handleFcstdisc called with:', { cwa, type, format });
+  
+  const url = new URL("https://aviationweather.gov/api/data/fcstdisc");
+  url.searchParams.append("cwa", cwa);
+  
+  if (type) {
+    url.searchParams.append("type", type);
+  }
+  
+  url.searchParams.append("format", format || "xml");
+
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
 
   return {
     content: [{
@@ -422,11 +650,16 @@ const server = new Server(
 );
 
 // Set up request handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: WEATHER_TOOLS,
-}));
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  debugLog('Received ListTools request');
+  return {
+    tools: WEATHER_TOOLS,
+  };
+});
 
 server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
+  debugLog('Received CallTool request:', { name: request.params.name, args: request.params.arguments });
+  
   try {
     switch (request.params.name) {
       case "get-metar": {
@@ -458,51 +691,81 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get-windtemp": {
-        const { region, altitude, format } = request.params.arguments as {
-          region: string;
-          altitude: string;
+        const { region, level, fcst, format } = request.params.arguments as {
+          region?: string;
+          level?: string;
+          fcst?: string;
           format?: string;
         };
-        return await handleWindTemp(region, altitude, format);
+        return await handleWindTemp(region, level, fcst, format);
       }
 
       case "get-station-info": {
-        const { id, bbox, format } = request.params.arguments as {
-          id?: string;
+        const { ids, bbox, format } = request.params.arguments as {
+          ids?: string;
           bbox?: string;
           format?: string;
         };
-        return await handleStationInfo(id, bbox, format);
+        return await handleStationInfo(ids, bbox, format);
       }
 
       case "get-airport-info": {
-        const { id, bbox, format } = request.params.arguments as {
-          id?: string;
+        const { ids, bbox, format } = request.params.arguments as {
+          ids?: string;
           bbox?: string;
           format?: string;
         };
-        return await handleAirportInfo(id, bbox, format);
+        return await handleAirportInfo(ids, bbox, format);
       }
 
       case "get-navaid-info": {
-        const { id, bbox, format } = request.params.arguments as {
-          id?: string;
+        const { ids, bbox, format } = request.params.arguments as {
+          ids?: string;
           bbox?: string;
           format?: string;
         };
-        return await handleNavaidInfo(id, bbox, format);
+        return await handleNavaidInfo(ids, bbox, format);
       }
 
       case "get-fix-info": {
-        const { id, bbox, format } = request.params.arguments as {
-          id?: string;
+        const { ids, bbox, format } = request.params.arguments as {
+          ids?: string;
           bbox?: string;
           format?: string;
         };
-        return await handleFixInfo(id, bbox, format);
+        return await handleFixInfo(ids, bbox, format);
+      }
+      
+      // Handle new tools
+      case "get-isigmet": {
+        const { hazard, level, format } = request.params.arguments as {
+          hazard?: string;
+          level?: number;
+          format?: string;
+        };
+        return await handleIsigmet(hazard, level, format);
+      }
+      
+      case "get-cwa": {
+        const { loc, hazard, format } = request.params.arguments as {
+          loc?: string;
+          hazard?: string;
+          format?: string;
+        };
+        return await handleCwa(loc, hazard, format);
+      }
+      
+      case "get-fcstdisc": {
+        const { cwa, type, format } = request.params.arguments as {
+          cwa: string;
+          type?: string;
+          format?: string;
+        };
+        return await handleFcstdisc(cwa, type, format);
       }
 
       default:
+        debugLog('Unknown tool:', request.params.name);
         return {
           content: [{
             type: "text",
@@ -512,6 +775,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         };
     }
   } catch (error) {
+    debugLog('Error handling tool call:', error);
     return {
       content: [{
         type: "text",
