@@ -1,38 +1,22 @@
 {
   "name": "aviation-mcp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "index.js",
   "author": "Brian Levinstein <blevinstein@gmail.com>",
   "license": "MIT",
   "bin": {
-    "aviation-mcp-weather": "dist/services/weather/src/index.js",
-    "aviation-mcp-charts": "dist/services/charts/src/index.js",
-    "aviation-mcp-notam": "dist/services/notam/src/index.js",
-    "aviation-mcp-airports": "dist/services/airports/src/index.js",
-    "aviation-mcp-precipitation": "dist/services/precipitation/src/index.js",
-    "aviation-mcp-aircraft": "dist/services/aircraft/src/index.js"
+    "aviation-mcp": "./dist/index.js"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules npx jest --maxWorkers=2",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' npx jest --maxWorkers=2",
     "test:weather": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/weather/test",
     "test:airports": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/airports/test",
     "test:charts": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/charts/test",
     "test:notam": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/notam/test",
     "test:precipitation": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/precipitation/test",
     "test:aircraft": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/aircraft/test",
-    "start:weather": "node services/weather/src/index.ts",
-    "start:charts": "node services/charts/src/index.ts",
-    "start:airports": "node services/airports/src/index.ts",
-    "start:notam": "node services/notam/src/index.ts",
-    "start:precipitation": "node services/precipitation/src/index.ts",
-    "start:aircraft": "node services/aircraft/src/index.ts",
-    "build:weather": "tsc -p tsconfig.json && chmod +x dist/services/weather/src/index.js",
-    "build:charts": "tsc -p tsconfig.json && chmod +x dist/services/charts/src/index.js",
-    "build:airports": "tsc -p tsconfig.json && chmod +x dist/services/airports/src/index.js",
-    "build:notam": "tsc -p tsconfig.json && chmod +x dist/services/notam/src/index.js",
-    "build:precipitation": "tsc -p tsconfig.json && chmod +x dist/services/precipitation/src/index.js",
-    "build:aircraft": "tsc -p tsconfig.json && chmod +x dist/services/aircraft/src/index.js",
-    "build": "yarn build:weather && yarn build:charts && yarn build:airports && yarn build:notam && yarn build:precipitation && yarn build:aircraft",
+    "start": "ts-node --esm index.ts",
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
     "prepare": "yarn build"
   },
   "devDependencies": {

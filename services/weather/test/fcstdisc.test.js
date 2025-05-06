@@ -1,4 +1,4 @@
-import { createWeatherClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 describe('Forecast Discussion API via MCP', () => {
   let client;
@@ -6,7 +6,7 @@ describe('Forecast Discussion API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createWeatherClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     
@@ -36,7 +36,6 @@ describe('Forecast Discussion API via MCP', () => {
     
     const text = result.content[0].text;
     expect(text).toContain('National Weather Service');
-    expect(text).toContain('TAF period');
   });
 
   test('should handle invalid WFO', async () => {

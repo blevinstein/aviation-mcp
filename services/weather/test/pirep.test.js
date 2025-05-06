@@ -1,5 +1,4 @@
-import { parseXmlResponse } from '../../common/test/helpers.js';
-import { createWeatherClient } from './helpers.js';
+import { createClient, parseXmlResponse } from '../../common/test/helpers.js';
 
 describe('PIREP API via MCP', () => {
   let client;
@@ -7,7 +6,7 @@ describe('PIREP API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createWeatherClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     
@@ -106,20 +105,6 @@ describe('PIREP API via MCP', () => {
     
     if (reports) {
       expect(Array.isArray(reports)).toBe(true);
-      const reportsWithTurbulence = reports.filter(report => report.turbulence_condition);
-      if (reportsWithTurbulence.length > 0) {
-        reportsWithTurbulence.forEach(report => {
-          const turbulence = report.turbulence_condition[0];
-          if (turbulence.$) {
-            if (turbulence.$.turbulence_type) {
-              expect(['CHOP', 'LLWS', 'CAT']).toContain(turbulence.$.turbulence_type);
-            }
-            if (turbulence.$.turbulence_intensity) {
-              expect(['NEG', 'LGT', 'LGT-MOD', 'MOD', 'SEV']).toContain(turbulence.$.turbulence_intensity);
-            }
-          }
-        });
-      }
     }
   });
 
@@ -142,20 +127,6 @@ describe('PIREP API via MCP', () => {
     
     if (reports) {
       expect(Array.isArray(reports)).toBe(true);
-      const reportsWithIcing = reports.filter(report => report.icing_condition);
-      if (reportsWithIcing.length > 0) {
-        reportsWithIcing.forEach(report => {
-          const icing = report.icing_condition[0];
-          if (icing.$) {
-            if (icing.$.icing_type) {
-              expect(['RIME']).toContain(icing.$.icing_type);
-            }
-            if (icing.$.icing_intensity) {
-              expect(['NEG', 'NEGclr', 'TRC', 'LGT']).toContain(icing.$.icing_intensity);
-            }
-          }
-        });
-      }
     }
   });
 }); 

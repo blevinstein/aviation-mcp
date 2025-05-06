@@ -1,14 +1,4 @@
-#!/usr/bin/env node
-
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 
 // Types matching SDK 1.0.1
 interface Tool {
@@ -27,7 +17,8 @@ const TAC_GEONAMES = [
 const ENROUTE_GEONAMES = ["US","Alaska","Pacific","Caribbean"];
 const ENROUTE_SERIES = ["low","high","area"];
 
-const CHARTS_TOOLS = [
+// Export tools for use by the main server
+export const TOOLS: Tool[] = [
   {
     name: "get_sectional",
     description: "Retrieves sectional charts",
@@ -351,64 +342,47 @@ async function handleTPPInfo(geoname = 'US', edition = 'current') {
   return { content: [{ type: "text", text: data }], isError: false };
 }
 
-// Server setup
-const server = new Server(
-  {
-    name: "mcp-server/aviation-charts",
-    version: "0.1.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-// Set up request handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: CHARTS_TOOLS,
-}));
-
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
+// Export unified handler function for the main server
+export async function handleToolCall(toolName: string, args: any) {
   try {
-    switch (request.params.name) {
+    switch (toolName) {
       case "get_sectional": {
-        const { geoname, edition, format } = request.params.arguments;
+        const { geoname, edition, format } = args;
         return await handleSectional(geoname, edition, format);
       }
       case "get_sectional_info": {
-        const { geoname, edition } = request.params.arguments;
+        const { geoname, edition } = args;
         return await handleSectionalInfo(geoname, edition);
       }
       case "get_tac": {
-        const { geoname, edition, format } = request.params.arguments;
+        const { geoname, edition, format } = args;
         return await handleTAC(geoname, edition, format);
       }
       case "get_tac_info": {
-        const { geoname, edition } = request.params.arguments;
+        const { geoname, edition } = args;
         return await handleTACInfo(geoname, edition);
       }
       case "get_enroute": {
-        const { geoname, seriesType, edition, format } = request.params.arguments;
+        const { geoname, seriesType, edition, format } = args;
         return await handleEnroute(geoname, seriesType, edition, format);
       }
       case "get_enroute_info": {
-        const { edition } = request.params.arguments;
+        const { edition } = args;
         return await handleEnrouteInfo(edition);
       }
       case "get_tpp": {
-        const { icao, geoname, edition, format } = request.params.arguments;
+        const { icao, geoname, edition, format } = args;
         return await handleTPP(icao, geoname, edition, format);
       }
       case "get_tpp_info": {
-        const { geoname, edition } = request.params.arguments;
+        const { geoname, edition } = args;
         return await handleTPPInfo(geoname, edition);
       }
       default:
         return {
           content: [{
             type: "text",
-            text: `Unknown tool: ${request.params.name}`
+            text: `Unknown tool: ${toolName}`
           }],
           isError: true
         };
@@ -422,15 +396,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       isError: true
     };
   }
-});
-
-async function runServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Aviation Charts MCP Server running on stdio");
 }
-
-runServer().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-}); 

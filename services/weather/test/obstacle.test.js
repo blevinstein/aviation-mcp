@@ -1,4 +1,4 @@
-import { createWeatherClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 describe('Obstacle API via MCP', () => {
   let client;
@@ -6,7 +6,7 @@ describe('Obstacle API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createWeatherClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     

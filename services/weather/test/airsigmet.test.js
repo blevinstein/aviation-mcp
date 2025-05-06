@@ -1,5 +1,5 @@
 import { parseXmlResponse } from '../../common/test/helpers.js';
-import { createWeatherClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 
 
@@ -9,7 +9,7 @@ describe('Domestic SIGMET API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createWeatherClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     

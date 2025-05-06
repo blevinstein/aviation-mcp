@@ -1,14 +1,4 @@
-#!/usr/bin/env node
-
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 
 // Types matching SDK 1.0.1
 interface Tool {
@@ -26,8 +16,8 @@ function debugLog(...args: any[]) {
   }
 }
 
-// Define the tools directly
-const NOTAM_TOOLS: Tool[] = [
+// Export TOOLS array for use by the main server
+export const TOOLS: Tool[] = [
   {
     name: "get_notams",
     description: "Retrieves NOTAMs based on specified filters",
@@ -205,32 +195,11 @@ async function handleNotams(
   };
 }
 
-// Server setup
-const server = new Server(
-  {
-    name: "mcp-server/aviation-notam",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-// Set up request handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  debugLog('Received ListTools request');
-  return {
-    tools: NOTAM_TOOLS
-  };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
-  debugLog('Received CallTool request:', { name: request.params.name, args: request.params.arguments });
+export async function handleToolCall(toolName: string, args: any) {
+  debugLog('Received CallTool request:', { name: toolName, args });
   
   try {
-    switch (request.params.name) {
+    switch (toolName) {
       case "get_notams": {
         const {
           responseFormat,
@@ -250,7 +219,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           sortOrder,
           pageSize,
           pageNum,
-        } = request.params.arguments;
+        } = args;
         
         return await handleNotams(
           responseFormat,
@@ -273,11 +242,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         );
       }
       default:
-        debugLog('Unknown tool:', request.params.name);
+        debugLog('Unknown tool:', toolName);
         return {
           content: [{
             type: "text",
-            text: `Unknown tool: ${request.params.name}`
+            text: `Unknown tool: ${toolName}`
           }],
           isError: true
         };
@@ -292,15 +261,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       isError: true
     };
   }
-});
-
-async function runServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Aviation NOTAM MCP Server running on stdio");
 }
-
-runServer().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-}); 

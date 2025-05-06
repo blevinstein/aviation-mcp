@@ -1,11 +1,11 @@
-import { createAirportsClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 describe.skip('ADIP Airport API via MCP', () => {
   let client;
   let clientTransport;
 
   beforeAll(async () => {
-    const connection = await createAirportsClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     const tools = await client.listTools();

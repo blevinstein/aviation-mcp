@@ -1,43 +1,13 @@
-#!/usr/bin/env node
-
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
 
 // Enable debug logging
-const DEBUG = process.env.DEBUG === 'true' || true;
+const DEBUG = process.env.DEBUG === 'true';
 
 function debugLog(...args: any[]) {
   if (DEBUG) {
     console.error('[DEBUG]', ...args);
   }
 }
-
-// Log environment details
-debugLog('Process started with:');
-debugLog('- Node version:', process.version);
-debugLog('- Current directory:', process.cwd());
-debugLog('- ENV vars:', Object.keys(process.env).filter(key => !key.includes('SECRET') && !key.includes('KEY')));
-debugLog('- Arguments:', process.argv);
-
-// Register process error handlers
-process.on('uncaughtException', (err) => {
-  console.error('[FATAL] Uncaught exception:', err);
-  // Don't exit immediately to allow logging
-  setTimeout(() => process.exit(1), 100);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('[FATAL] Unhandled promise rejection:', reason);
-});
-
-process.on('exit', (code) => {
-  console.error(`[INFO] Process exiting with code ${code}`);
-});
 
 // Types matching SDK 1.0.1
 interface Tool {
@@ -46,8 +16,7 @@ interface Tool {
   inputSchema: any;
 }
 
-// Define the tools directly
-const WEATHER_TOOLS: Tool[] = [
+export const TOOLS: Tool[] = [
   {
     name: "get_metar",
     description: "Retrieves current METAR data for one or more stations",
@@ -321,12 +290,6 @@ const WEATHER_TOOLS: Tool[] = [
           type: "string",
           description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         },
-        format: {
-          type: "string",
-          enum: ["xml", "json", "html", "plain"],
-          default: "xml",
-          description: "Response format"
-        }
       }
     }
   },
@@ -707,20 +670,19 @@ async function handleIsigmet(format?: string, hazard?: string, level?: number, d
   };
 }
 
-async function handleCwa(hazard?: string, date?: string, format?: string) {
-  debugLog('handleCwa called with:', { hazard, date, format });
+async function handleCwa(hazard?: string, date?: string) {
+  debugLog('handleCwa called with:', { hazard, date });
   const url = new URL("https://aviationweather.gov/api/data/cwa");
   if (hazard) url.searchParams.append("hazard", hazard);
   if (date) url.searchParams.append("date", date);
-  if (format) url.searchParams.append("format", format);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
+  const data = await response.text();
   debugLog('Response status:', response.status);
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: data,
     }],
     isError: false
   };
@@ -913,35 +875,14 @@ async function handleAirsigmet(format?: string, hazard?: string, level?: number,
   };
 }
 
-// Server setup
-debugLog('Creating MCP server');
-const server = new Server(
-  {
-    name: "mcp-server/aviation-weather",
-    version: "0.1.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-// Set up request handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  debugLog('Received ListTools request');
-  return {
-    tools: WEATHER_TOOLS,
-  };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
-  debugLog('Received CallTool request:', { name: request.params.name, args: request.params.arguments });
+// Export a unified handler function for use by the main server
+export async function handleToolCall(toolName: string, args: any) {
+  debugLog('Weather handleToolCall called with:', { toolName, args });
   
   try {
-    switch (request.params.name) {
+    switch (toolName) {
       case "get_metar": {
-        const { ids, format, taf, hours, bbox, date } = request.params.arguments as {
+        const { ids, format, taf, hours, bbox, date } = args as {
           ids: string;
           format?: string;
           taf?: boolean;
@@ -953,7 +894,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_taf": {
-        const { ids, format, metar, bbox, time, date } = request.params.arguments as {
+        const { ids, format, metar, bbox, time, date } = args as {
           ids: string;
           format?: string;
           metar?: boolean;
@@ -965,7 +906,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_pirep": {
-        const { id, format, age, distance, level, inten, date } = request.params.arguments as {
+        const { id, format, age, distance, level, inten, date } = args as {
           id?: string;
           format?: string;
           age?: number;
@@ -978,7 +919,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_windtemp": {
-        const { region, level, fcst } = request.params.arguments as {
+        const { region, level, fcst } = args as {
           region?: string;
           level?: string;
           fcst?: string;
@@ -987,7 +928,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_station_info": {
-        const { ids, bbox, format } = request.params.arguments as {
+        const { ids, bbox, format } = args as {
           ids?: string;
           bbox?: string;
           format?: string;
@@ -996,7 +937,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_airport_info": {
-        const { ids, bbox, format } = request.params.arguments as {
+        const { ids, bbox, format } = args as {
           ids?: string;
           bbox?: string;
           format?: string;
@@ -1005,7 +946,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_navaid_info": {
-        const { ids, bbox, format } = request.params.arguments as {
+        const { ids, bbox, format } = args as {
           ids?: string;
           bbox?: string;
           format?: string;
@@ -1014,7 +955,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_fix_info": {
-        const { ids, bbox, format } = request.params.arguments as {
+        const { ids, bbox, format } = args as {
           ids?: string;
           bbox?: string;
           format?: string;
@@ -1024,7 +965,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       
       // Handle new tools
       case "get_isigmet": {
-        const { format, hazard, level, date } = request.params.arguments as {
+        const { format, hazard, level, date } = args as {
           format?: string;
           hazard?: string;
           level?: number;
@@ -1034,16 +975,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       
       case "get_cwa": {
-        const { hazard, date, format } = request.params.arguments as {
+        const { hazard, date } = args as {
           hazard?: string;
           date?: string;
-          format?: string;
         };
-        return await handleCwa(hazard, date, format);
+        return await handleCwa(hazard, date);
       }
       
       case "get_fcstdisc": {
-        const { cwa, type, format } = request.params.arguments as {
+        const { cwa, type, format } = args as {
           cwa: string;
           type?: string;
           format?: string;
@@ -1052,7 +992,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_feature": {
-        const { bbox, format } = request.params.arguments as {
+        const { bbox, format } = args as {
           bbox?: string;
           format?: string;
         };
@@ -1060,7 +1000,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_obstacle": {
-        const { bbox, format } = request.params.arguments as {
+        const { bbox, format } = args as {
           bbox?: string;
           format?: string;
         };
@@ -1068,7 +1008,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_mis": {
-        const { loc, format } = request.params.arguments as {
+        const { loc, format } = args as {
           loc?: string;
           format?: string;
         };
@@ -1076,7 +1016,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_gairmet": {
-        const { type, hazard, format, date } = request.params.arguments as {
+        const { type, hazard, format, date } = args as {
           type?: string;
           hazard?: string;
           format?: string;
@@ -1086,7 +1026,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_airsigmet": {
-        const { format, hazard, level, date } = request.params.arguments as {
+        const { format, hazard, level, date } = args as {
           format?: string;
           hazard?: string;
           level?: number;
@@ -1096,11 +1036,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       default:
-        debugLog('Unknown tool:', request.params.name);
+        debugLog('Unknown tool:', toolName);
         return {
           content: [{
             type: "text",
-            text: `Unknown tool: ${request.params.name}`
+            text: `Unknown tool: ${toolName}`
           }],
           isError: true
         };
@@ -1115,36 +1055,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       isError: true
     };
   }
-});
-
-async function runServer() {
-  try {
-    debugLog('Initializing StdioServerTransport');
-    const transport = new StdioServerTransport();
-    
-    debugLog('Connecting to transport');
-    await server.connect(transport);
-    
-    console.error("Aviation Weather MCP Server running on stdio");
-    
-    // Check if stdin/stdout are available
-    debugLog('Checking stdin/stdout availability:');
-    debugLog('- stdin isTTY:', process.stdin.isTTY);
-    debugLog('- stdout isTTY:', process.stdout.isTTY);
-    debugLog('- stderr isTTY:', process.stderr.isTTY);
-    
-    // Check if running in npx environment
-    if (process.env.npm_execpath) {
-      debugLog('Running via npm/npx with execpath:', process.env.npm_execpath);
-    }
-  } catch (error) {
-    console.error("[FATAL] Failed to start server:", error);
-    process.exit(1);
-  }
 }
-
-debugLog('About to start server');
-runServer().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-}); 

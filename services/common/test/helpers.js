@@ -23,10 +23,9 @@ export function parseXmlResponse(xmlString) {
 /**
  * Create and initialize an MCP client connected to a specified server module.
  * @param {string} serverPath - Path to the server module (relative to project root)
- * @param {string} [clientName="test-client"] - Name of the client
  * @returns {Promise<{client: Client, clientTransport: StdioClientTransport}>} The initialized client and transport
  */
-export async function createClient(serverPath, clientName = "test-client") {
+export async function createClient(serverPath = 'index.ts') {
   const fullServerPath = resolve(serverPath);
   
   // Prepare environment variables for the server process
@@ -47,7 +46,7 @@ export async function createClient(serverPath, clientName = "test-client") {
   // Create and initialize client
   const client = new Client(
     {
-      name: clientName,
+      name: "aviation-mcp-test",
       version: "1.0.0"
     }, 
     {

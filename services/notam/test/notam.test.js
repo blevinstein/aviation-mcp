@@ -1,4 +1,4 @@
-import { createNotamClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 describe('NOTAM API via MCP', () => {
   let client;
@@ -6,7 +6,7 @@ describe('NOTAM API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createNotamClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     

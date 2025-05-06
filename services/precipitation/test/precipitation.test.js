@@ -1,4 +1,4 @@
-import { createPrecipitationClient } from './helpers.js';
+import { createClient } from '../../common/test/helpers.js';
 
 describe('Precipitation API via MCP', () => {
   let client;
@@ -6,7 +6,7 @@ describe('Precipitation API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createPrecipitationClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     

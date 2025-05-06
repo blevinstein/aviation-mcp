@@ -27,7 +27,7 @@ function debugLog(...args: any[]) {
 
 const BASE_URL = "https://external-api.faa.gov/adip";
 
-const AIRPORT_TOOLS: Tool[] = [
+export const TOOLS: Tool[] = [
   {
     name: "get_airport_details",
     description: "Get airport details by airport identifier (locId)",
@@ -339,69 +339,54 @@ async function handleAirportSearch(search) {
   return { content: [{ type: "text", text: data }], isError: false };
 }
 
-const server = new Server(
-  {
-    name: "mcp-server/aviation-airports",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  debugLog('Received ListTools request');
-  return { tools: AIRPORT_TOOLS };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
-  debugLog('Received CallTool request:', { name: request.params.name, args: request.params.arguments });
+// Export unified handler function for the main server
+export async function handleToolCall(toolName: string, args: any) {
+  debugLog('Airports handleToolCall called with:', { toolName, args });
+  
   try {
-    switch (request.params.name) {
+    switch (toolName) {
       case "get_airport_details": {
-        const { locId, filter } = request.params.arguments;
+        const { locId, filter } = args;
         return await handleGetAirportDetails(locId, filter);
       }
       case "get_airport_changes_logs": {
-        const { from, to } = request.params.arguments;
+        const { from, to } = args;
         return await handleGetAirportChangesLogs(from, to);
       }
       case "get_airport_changes_logs_for_loc": {
-        const { locId, from, to } = request.params.arguments;
+        const { locId, from, to } = args;
         return await handleGetAirportChangesLogsForLoc(locId, from, to);
       }
       case "get_airport_changes_diff": {
-        const { locId, from, to } = request.params.arguments;
+        const { locId, from, to } = args;
         return await handleGetAirportChangesDiff(locId, from, to);
       }
       case "list_airports_radius": {
-        const { lat, lon, radius, unit, filter } = request.params.arguments;
+        const { lat, lon, radius, unit, filter } = args;
         return await handleListAirportsRadius(lat, lon, radius, unit, filter);
       }
       case "list_airports_radius_for_loc": {
-        const { locId, radius, unit, filter } = request.params.arguments;
+        const { locId, radius, unit, filter } = args;
         return await handleListAirportsRadiusForLoc(locId, radius, unit, filter);
       }
       case "list_airports_bbox": {
-        const { lat, lon, bbox, unit } = request.params.arguments;
+        const { lat, lon, bbox, unit } = args;
         return await handleListAirportsBBox(lat, lon, bbox, unit);
       }
       case "list_airports_bbox_for_loc": {
-        const { locId, bbox, unit } = request.params.arguments;
+        const { locId, bbox, unit } = args;
         return await handleListAirportsBBoxForLoc(locId, bbox, unit);
       }
       case "airport_search": {
-        const { search } = request.params.arguments;
+        const { search } = args;
         return await handleAirportSearch(search);
       }
       default:
-        debugLog('Unknown tool:', request.params.name);
+        debugLog('Unknown tool:', toolName);
         return {
           content: [{
             type: "text",
-            text: `Unknown tool: ${request.params.name}`
+            text: `Unknown tool: ${toolName}`
           }],
           isError: true
         };
@@ -416,15 +401,5 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       isError: true
     };
   }
-});
-
-async function runServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Aviation Airports MCP Server running on stdio");
 }
 
-runServer().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-}); 

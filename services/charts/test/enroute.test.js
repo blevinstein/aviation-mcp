@@ -1,5 +1,4 @@
-import { parseXmlResponse } from '../../common/test/helpers.js';
-import { createChartsClient } from './helpers.js';
+import { createClient, parseXmlResponse } from '../../common/test/helpers.js';
 
 describe('IFR Enroute Charts API via MCP', () => {
   let client;
@@ -7,7 +6,7 @@ describe('IFR Enroute Charts API via MCP', () => {
 
   beforeAll(async () => {
     // Create and initialize client
-    const connection = await createChartsClient();
+    const connection = await createClient();
     client = connection.client;
     clientTransport = connection.clientTransport;
     

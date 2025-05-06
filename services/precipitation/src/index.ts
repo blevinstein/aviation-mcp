@@ -1,15 +1,4 @@
-#!/usr/bin/env node
-
-import dotenv from "dotenv";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 
 // Types matching SDK 1.0.1
 interface Tool {
@@ -17,8 +6,6 @@ interface Tool {
   description: string;
   inputSchema: any;
 }
-
-dotenv.config();
 
 // Enable debug logging
 const DEBUG = process.env.DEBUG === 'true';
@@ -46,8 +33,7 @@ const PRECIPITATION_INTENSITY = {
   "6": "Very heavy rain and hail; large hail possible"
 };
 
-// Define the tools directly
-const PRECIPITATION_TOOLS: Tool[] = [
+export const TOOLS: Tool[] = [
   {
     name: "get_precipitation",
     description: "Retrieves precipitation intensity data for specified coordinates and times",
@@ -171,37 +157,17 @@ async function handlePrecipitation(
   }
 }
 
-// Server setup
-const server = new Server(
-  {
-    name: "mcp-server/aviation-precipitation",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-// Set up request handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  debugLog('Received ListTools request');
-  return {
-    tools: PRECIPITATION_TOOLS
-  };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
-  debugLog('Received CallTool request:', { name: request.params.name, args: request.params.arguments });
+// Export unified handler function for the main server
+export async function handleToolCall(toolName: string, args: any) {
+  debugLog('Precipitation handleToolCall called with:', { toolName, args });
   
   try {
-    switch (request.params.name) {
+    switch (toolName) {
       case "get_precipitation": {
         const {
           points,
           includeDescription,
-        } = request.params.arguments;
+        } = args;
         
         return await handlePrecipitation(
           points,
@@ -209,11 +175,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
         );
       }
       default:
-        debugLog('Unknown tool:', request.params.name);
+        debugLog('Unknown tool:', toolName);
         return {
           content: [{
             type: "text",
-            text: `Unknown tool: ${request.params.name}`
+            text: `Unknown tool: ${toolName}`
           }],
           isError: true
         };
@@ -228,15 +194,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       isError: true
     };
   }
-});
-
-async function runServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Aviation Precipitation MCP Server running on stdio");
 }
-
-runServer().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-});
