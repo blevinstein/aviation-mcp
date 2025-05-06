@@ -303,7 +303,45 @@ const WEATHER_TOOLS: Tool[] = [
       },
       required: ["cwa"]
     }
-  }
+  },
+  {
+    name: "get-feature",
+    description: "Retrieves feature information within a specified area",
+    inputSchema: {
+      type: "object",
+      properties: {
+        bbox: {
+          type: "string",
+          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+        },
+        format: {
+          type: "string",
+          enum: ["json", "geojson", "raw", "xml"],
+          default: "xml",
+          description: "Response format"
+        }
+      }
+    }
+  },
+  {
+    name: "get-obstacle",
+    description: "Retrieves obstacle information within a specified area",
+    inputSchema: {
+      type: "object",
+      properties: {
+        bbox: {
+          type: "string",
+          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+        },
+        format: {
+          type: "string",
+          enum: ["json", "geojson", "raw", "xml"],
+          default: "xml",
+          description: "Response format"
+        }
+      }
+    }
+  },
 ];
 
 // Tool handlers
@@ -636,6 +674,76 @@ async function handleFcstdisc(cwa: string, type?: string, format?: string) {
   };
 }
 
+// Add handler function for feature API
+async function handleFeature(bbox?: string, format?: string) {
+  debugLog('handleFeature called with:', { bbox, format });
+  
+  const url = new URL("https://aviationweather.gov/api/data/feature");
+  
+  if (bbox) {
+    url.searchParams.append("bbox", bbox);
+  }
+  
+  url.searchParams.append("format", format || "xml");
+
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  
+  // Handle different response formats
+  let data;
+  if (format === "json" || format === "geojson") {
+    data = await response.json();
+    data = JSON.stringify(data, null, 2);
+  } else {
+    data = await response.text();
+  }
+  
+  debugLog('Response status:', response.status);
+
+  return {
+    content: [{
+      type: "text",
+      text: data
+    }],
+    isError: false
+  };
+}
+
+// Add handler function for obstacle API
+async function handleObstacle(bbox?: string, format?: string) {
+  debugLog('handleObstacle called with:', { bbox, format });
+  
+  const url = new URL("https://aviationweather.gov/api/data/obstacle");
+  
+  if (bbox) {
+    url.searchParams.append("bbox", bbox);
+  }
+  
+  url.searchParams.append("format", format || "xml");
+
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  
+  // Handle different response formats
+  let data;
+  if (format === "json" || format === "geojson") {
+    data = await response.json();
+    data = JSON.stringify(data, null, 2);
+  } else {
+    data = await response.text();
+  }
+  
+  debugLog('Response status:', response.status);
+
+  return {
+    content: [{
+      type: "text",
+      text: data
+    }],
+    isError: false
+  };
+}
+
 // Server setup
 const server = new Server(
   {
@@ -762,6 +870,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           format?: string;
         };
         return await handleFcstdisc(cwa, type, format);
+      }
+
+      case "get-feature": {
+        const { bbox, format } = request.params.arguments as {
+          bbox?: string;
+          format?: string;
+        };
+        return await handleFeature(bbox, format);
+      }
+
+      case "get-obstacle": {
+        const { bbox, format } = request.params.arguments as {
+          bbox?: string;
+          format?: string;
+        };
+        return await handleObstacle(bbox, format);
       }
 
       default:
