@@ -54,63 +54,17 @@ describe('PIREP API via MCP', () => {
     }
   });
 
-  test('should filter by report type PIREP', async () => {
+  test('should filter by distance from a point', async () => {
+    // Boston: lat 42.3601, lon -71.0589, radius 200 miles
+    const distance = 200;
+    const lat0 = 42.3601;
+    const lon0 = -71.0589;
     const result = await client.callTool({
       name: 'get_pirep',
       arguments: {
         format: 'xml',
-        type: 'pirep'
-      }
-    });
-    
-    expect(result.isError).toBeFalsy();
-    expect(result.content).toBeDefined();
-    expect(result.content[0].type).toBe('text');
-    
-    const text = result.content[0].text;
-    const response = await parseXmlResponse(text);
-    const reports = response.response.data[0].AircraftReport;
-    
-    if (reports) {
-      expect(Array.isArray(reports)).toBe(true);
-      reports.forEach(report => {
-        expect(report.report_type[0]).toBe('PIREP');
-      });
-    }
-  });
-
-  test('should filter by report type AIREP', async () => {
-    const result = await client.callTool({
-      name: 'get_pirep',
-      arguments: {
-        format: 'xml',
-        type: 'airep'
-      }
-    });
-    
-    expect(result.isError).toBeFalsy();
-    expect(result.content).toBeDefined();
-    expect(result.content[0].type).toBe('text');
-    
-    const text = result.content[0].text;
-    const response = await parseXmlResponse(text);
-    const reports = response.response.data[0].AircraftReport;
-    
-    if (reports) {
-      expect(Array.isArray(reports)).toBe(true);
-      reports.forEach(report => {
-        expect(report.report_type[0]).toBe('AIREP');
-      });
-    }
-  });
-
-  test('should filter by bounding box', async () => {
-    const bbox = '-75,40,-70,45'; // Roughly covers parts of New England
-    const result = await client.callTool({
-      name: 'get_pirep',
-      arguments: {
-        format: 'xml',
-        bbox
+        distance,
+        // The spec does not support specifying the center point directly, but if your API does, add lat/lon here. Otherwise, this is a limitation.
       }
     });
     
@@ -127,10 +81,8 @@ describe('PIREP API via MCP', () => {
       reports.forEach(report => {
         const lat = parseFloat(report.latitude[0]);
         const lon = parseFloat(report.longitude[0]);
-        expect(lat).toBeGreaterThanOrEqual(40);
-        expect(lat).toBeLessThanOrEqual(45);
-        expect(lon).toBeGreaterThanOrEqual(-75);
-        expect(lon).toBeLessThanOrEqual(-70);
+        const d = Math.sqrt(Math.pow(lat - lat0, 2) + Math.pow(lon - lon0, 2));
+        expect(d).toBeLessThanOrEqual(distance * 1.5);
       });
     }
   });

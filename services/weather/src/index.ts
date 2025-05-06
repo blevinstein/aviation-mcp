@@ -40,18 +40,25 @@ const WEATHER_TOOLS: Tool[] = [
         },
         format: {
           type: "string",
-          enum: ["xml", "json"],
+          enum: ["raw", "json", "geojson", "xml", "html"],
           default: "xml",
           description: "Response format"
         },
-        hours: {
-          type: "integer",
-          description: "Number of hours of historical data to retrieve"
-        },
-        mostRecent: {
+        taf: {
           type: "boolean",
-          default: true,
-          description: "Whether to return only the most recent observation"
+          description: "Include TAF"
+        },
+        hours: {
+          type: "number",
+          description: "Hours back to search"
+        },
+        bbox: {
+          type: "string",
+          description: "Geographic bounding box (lat0, lon0, lat1, lon1)"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         }
       },
       required: ["ids"]
@@ -69,13 +76,26 @@ const WEATHER_TOOLS: Tool[] = [
         },
         format: {
           type: "string",
-          enum: ["xml", "json"],
+          enum: ["raw", "json", "geojson", "xml", "html"],
           default: "xml",
           description: "Response format"
         },
-        hours_before: {
-          type: "integer",
-          description: "Number of hours of historical data to retrieve"
+        metar: {
+          type: "boolean",
+          description: "Include METAR"
+        },
+        bbox: {
+          type: "string",
+          description: "Geographic bounding box (lat0, lon0, lat1, lon1)"
+        },
+        time: {
+          type: "string",
+          enum: ["valid", "issue"],
+          description: "Process time by valid (default) or issuance time"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         }
       },
       required: ["ids"]
@@ -87,21 +107,36 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        type: {
+        id: {
           type: "string",
-          enum: ["pirep", "airep"],
-          default: "pirep",
-          description: "Report type"
-        },
-        bbox: {
-          type: "string",
-          description: "Geographic bounding box (format: lon1,lat1,lon2,lat2)"
+          description: "Station ID"
         },
         format: {
           type: "string",
-          enum: ["xml", "json"],
-          default: "xml",
+          enum: ["raw", "json", "geojson", "xml"],
+          default: "raw",
           description: "Response format"
+        },
+        age: {
+          type: "number",
+          description: "Hours Back"
+        },
+        distance: {
+          type: "number",
+          description: "Distance"
+        },
+        level: {
+          type: "number",
+          description: "Level +-3000' to search"
+        },
+        inten: {
+          type: "string",
+          enum: ["lgt", "mod", "sev"],
+          description: "Minimum intensity"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         }
       }
     }
@@ -229,19 +264,24 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        hazard: {
-          type: "string",
-          description: "Hazard type to filter by (e.g., 'turb', 'ice', 'tc')"
-        },
-        level: {
-          type: "integer",
-          description: "Flight level to filter by"
-        },
         format: {
           type: "string",
-          enum: ["xml", "json"],
+          enum: ["raw", "json", "xml"],
           default: "xml",
           description: "Response format"
+        },
+        hazard: {
+          type: "string",
+          enum: ["turb", "ice"],
+          description: "Hazard type to filter by (e.g., 'turb', 'ice')"
+        },
+        level: {
+          type: "number",
+          description: "Level +-3000' to search"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         }
       }
     }
@@ -252,17 +292,18 @@ const WEATHER_TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        loc: {
-          type: "string",
-          description: "ARTCC identifier (e.g., 'ZAB', 'ZNY')"
-        },
         hazard: {
           type: "string",
-          description: "Hazard type to filter by (e.g., 'ts', 'turb')"
+          enum: ["ts", "turb", "ice", "ifr", "pcpn", "unk"],
+          description: "Hazard type to filter by"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         },
         format: {
           type: "string",
-          enum: ["xml", "json"],
+          enum: ["xml", "json", "html", "plain"],
           default: "xml",
           description: "Response format"
         }
@@ -365,13 +406,18 @@ const WEATHER_TOOLS: Tool[] = [
         },
         hazard: {
           type: "string",
-          description: "Hazard type to filter by (e.g., 'turb-hi', 'turb-lo', 'ice', 'ifr')"
+          enum: ["turb-hi", "turb-lo", "llws", "sfc_wind", "ifr", "mtn_obs", "ice", "fzlvl"],
+          description: "Hazard type to filter by"
         },
         format: {
           type: "string",
-          enum: ["xml", "json"],
+          enum: ["decoded", "json", "geojson", "xml"],
           default: "xml",
           description: "Response format"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
         }
       }
     }
@@ -406,98 +452,68 @@ const WEATHER_TOOLS: Tool[] = [
 ];
 
 // Tool handlers
-async function handleMetar(ids: string, format?: string, hours?: number, mostRecent?: boolean) {
-  debugLog('handleMetar called with:', { ids, format, hours, mostRecent });
-  
+async function handleMetar(ids: string, format?: string, taf?: boolean, hours?: number, bbox?: string, date?: string) {
+  debugLog('handleMetar called with:', { ids, format, taf, hours, bbox, date });
   const url = new URL("https://aviationweather.gov/api/data/metar");
   url.searchParams.append("ids", ids);
-  url.searchParams.append("format", format || "xml");
-  
-  if (hours !== undefined) {
-    url.searchParams.append("hours", hours.toString());
-  }
-  
-  if (mostRecent !== undefined) {
-    url.searchParams.append("mostRecent", mostRecent.toString());
-  }
-
+  if (format) url.searchParams.append("format", format);
+  if (taf !== undefined) url.searchParams.append("taf", taf.toString());
+  if (hours !== undefined) url.searchParams.append("hours", hours.toString());
+  if (bbox) url.searchParams.append("bbox", bbox);
+  if (date) url.searchParams.append("date", date);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
+  const data = await (format === "json" || format === "geojson" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-  
-  // Only log a preview of the data to avoid console clutter
-  if (typeof data === 'string') {
-    debugLog('Response data preview:', data.substring(0, 200) + '...');
-  } else {
-    debugLog('Response data keys:', Object.keys(data));
-  }
-
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: format === "json" || format === "geojson" ? JSON.stringify(data, null, 2) : data as string
     }],
     isError: false
   };
 }
 
-async function handleTaf(ids: string, format?: string, hours_before?: number) {
-  debugLog('handleTaf called with:', { ids, format, hours_before });
-  
+async function handleTaf(ids: string, format?: string, metar?: boolean, bbox?: string, time?: string, date?: string) {
+  debugLog('handleTaf called with:', { ids, format, metar, bbox, time, date });
   const url = new URL("https://aviationweather.gov/api/data/taf");
   url.searchParams.append("ids", ids);
-  url.searchParams.append("format", format || "xml");
-  
-  if (hours_before !== undefined) {
-    url.searchParams.append("hours_before", hours_before.toString());
-  }
-
+  if (format) url.searchParams.append("format", format);
+  if (metar !== undefined) url.searchParams.append("metar", metar.toString());
+  if (bbox) url.searchParams.append("bbox", bbox);
+  if (time) url.searchParams.append("time", time);
+  if (date) url.searchParams.append("date", date);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
+  const data = await (format === "json" || format === "geojson" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-  
-  // Only log a preview of the data to avoid console clutter
-  if (typeof data === 'string') {
-    debugLog('Response data preview:', data.substring(0, 200) + '...');
-  } else {
-    debugLog('Response data keys:', Object.keys(data));
-  }
-
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: format === "json" || format === "geojson" ? JSON.stringify(data, null, 2) : data as string
     }],
     isError: false
   };
 }
 
-async function handlePirep(type?: string, bbox?: string, format?: string) {
-  debugLog('handlePirep called with:', { type, bbox, format });
-  
+async function handlePirep(id?: string, format?: string, age?: number, distance?: number, level?: number, inten?: string, date?: string) {
+  debugLog('handlePirep called with:', { id, format, age, distance, level, inten, date });
   const url = new URL("https://aviationweather.gov/api/data/pirep");
-  
-  if (type) {
-    url.searchParams.append("type", type);
-  }
-  
-  if (bbox) {
-    url.searchParams.append("bbox", bbox);
-  }
-  
-  url.searchParams.append("format", format || "xml");
-
+  if (id) url.searchParams.append("id", id);
+  if (format) url.searchParams.append("format", format);
+  if (age !== undefined) url.searchParams.append("age", age.toString());
+  if (distance !== undefined) url.searchParams.append("distance", distance.toString());
+  if (level !== undefined) url.searchParams.append("level", level.toString());
+  if (inten) url.searchParams.append("inten", inten);
+  if (date) url.searchParams.append("date", date);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
+  const data = await (format === "json" || format === "geojson" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: format === "json" || format === "geojson" ? JSON.stringify(data, null, 2) : data as string
     }],
     isError: false
   };
@@ -651,26 +667,17 @@ async function handleFixInfo(ids?: string, bbox?: string, format?: string) {
 }
 
 // New handlers for the added tools
-async function handleIsigmet(hazard?: string, level?: number, format?: string) {
-  debugLog('handleIsigmet called with:', { hazard, level, format });
-  
+async function handleIsigmet(format?: string, hazard?: string, level?: number, date?: string) {
+  debugLog('handleIsigmet called with:', { format, hazard, level, date });
   const url = new URL("https://aviationweather.gov/api/data/isigmet");
-  
-  if (hazard) {
-    url.searchParams.append("hazard", hazard);
-  }
-  
-  if (level !== undefined) {
-    url.searchParams.append("level", level.toString());
-  }
-  
-  url.searchParams.append("format", format || "xml");
-
+  if (format) url.searchParams.append("format", format);
+  if (hazard) url.searchParams.append("hazard", hazard);
+  if (level !== undefined) url.searchParams.append("level", level.toString());
+  if (date) url.searchParams.append("date", date);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-
   return {
     content: [{
       type: "text",
@@ -680,26 +687,16 @@ async function handleIsigmet(hazard?: string, level?: number, format?: string) {
   };
 }
 
-async function handleCwa(loc?: string, hazard?: string, format?: string) {
-  debugLog('handleCwa called with:', { loc, hazard, format });
-  
+async function handleCwa(hazard?: string, date?: string, format?: string) {
+  debugLog('handleCwa called with:', { hazard, date, format });
   const url = new URL("https://aviationweather.gov/api/data/cwa");
-  
-  if (loc) {
-    url.searchParams.append("loc", loc);
-  }
-  
-  if (hazard) {
-    url.searchParams.append("hazard", hazard);
-  }
-  
-  url.searchParams.append("format", format || "xml");
-
+  if (hazard) url.searchParams.append("hazard", hazard);
+  if (date) url.searchParams.append("date", date);
+  if (format) url.searchParams.append("format", format);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
   const data = await (format === "json" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-
   return {
     content: [{
       type: "text",
@@ -854,31 +851,21 @@ async function handleMis(loc?: string, format?: string) {
 }
 
 // Add handler function for GAIRMET API
-async function handleGairmet(type?: string, hazard?: string, format?: string) {
-  debugLog('handleGairmet called with:', { type, hazard, format });
-  
+async function handleGairmet(type?: string, hazard?: string, format?: string, date?: string) {
+  debugLog('handleGairmet called with:', { type, hazard, format, date });
   const url = new URL("https://aviationweather.gov/api/data/gairmet");
-  
-  if (type) {
-    url.searchParams.append("type", type);
-  }
-  
-  if (hazard) {
-    url.searchParams.append("hazard", hazard);
-  }
-  
-  url.searchParams.append("format", format || "xml");
-
+  if (type) url.searchParams.append("type", type);
+  if (hazard) url.searchParams.append("hazard", hazard);
+  if (format) url.searchParams.append("format", format);
+  if (date) url.searchParams.append("date", date);
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
+  const data = await (format === "json" || format === "geojson" ? response.json() : response.text());
   debugLog('Response status:', response.status);
-  debugLog('Response data preview:', typeof data === 'string' ? data.substring(0, 200) + '...' : 'Non-string data');
-
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: format === "json" || format === "geojson" ? JSON.stringify(data, null, 2) : data as string
     }],
     isError: false
   };
@@ -933,31 +920,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   try {
     switch (request.params.name) {
       case "get_metar": {
-        const { ids, format, hours, mostRecent } = request.params.arguments as {
+        const { ids, format, taf, hours, bbox, date } = request.params.arguments as {
           ids: string;
           format?: string;
+          taf?: boolean;
           hours?: number;
-          mostRecent?: boolean;
+          bbox?: string;
+          date?: string;
         };
-        return await handleMetar(ids, format, hours, mostRecent);
+        return await handleMetar(ids, format, taf, hours, bbox, date);
       }
 
       case "get_taf": {
-        const { ids, format, hours_before } = request.params.arguments as {
+        const { ids, format, metar, bbox, time, date } = request.params.arguments as {
           ids: string;
           format?: string;
-          hours_before?: number;
+          metar?: boolean;
+          bbox?: string;
+          time?: string;
+          date?: string;
         };
-        return await handleTaf(ids, format, hours_before);
+        return await handleTaf(ids, format, metar, bbox, time, date);
       }
 
       case "get_pirep": {
-        const { type, bbox, format } = request.params.arguments as {
-          type?: string;
-          bbox?: string;
+        const { id, format, age, distance, level, inten, date } = request.params.arguments as {
+          id?: string;
           format?: string;
+          age?: number;
+          distance?: number;
+          level?: number;
+          inten?: string;
+          date?: string;
         };
-        return await handlePirep(type, bbox, format);
+        return await handlePirep(id, format, age, distance, level, inten, date);
       }
 
       case "get_windtemp": {
@@ -1007,21 +1003,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       
       // Handle new tools
       case "get_isigmet": {
-        const { hazard, level, format } = request.params.arguments as {
+        const { format, hazard, level, date } = request.params.arguments as {
+          format?: string;
           hazard?: string;
           level?: number;
-          format?: string;
+          date?: string;
         };
-        return await handleIsigmet(hazard, level, format);
+        return await handleIsigmet(format, hazard, level, date);
       }
       
       case "get_cwa": {
-        const { loc, hazard, format } = request.params.arguments as {
-          loc?: string;
+        const { hazard, date, format } = request.params.arguments as {
           hazard?: string;
+          date?: string;
           format?: string;
         };
-        return await handleCwa(loc, hazard, format);
+        return await handleCwa(hazard, date, format);
       }
       
       case "get_fcstdisc": {
@@ -1058,12 +1055,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_gairmet": {
-        const { type, hazard, format } = request.params.arguments as {
+        const { type, hazard, format, date } = request.params.arguments as {
           type?: string;
           hazard?: string;
           format?: string;
+          date?: string;
         };
-        return await handleGairmet(type, hazard, format);
+        return await handleGairmet(type, hazard, format, date);
       }
 
       case "get_airsigmet": {
