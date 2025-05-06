@@ -1,113 +1,68 @@
-# Aviation Model Context Protocol Servers
+# Aviation MCP: Model Context Protocol Servers for Aviation Data
 
-Integration platform for various aviation data sources and APIs.
+Aviation MCP provides a suite of Model Context Protocol (MCP) servers that map to FAA and other aviation APIs, making it easy to integrate real-time aviation data into your LLM-powered workflows. This project is designed for developers who want to connect their LLM clients (such as Cursor, Claude, or others) to authoritative aviation data sources for weather, NOTAMs, charts, aircraft info, and more.
 
-## API Integration Status
+## Features
 
-### FAA NOTAM API
-🚧 Not yet tested, waiting for API approval
+- Modular MCP servers for aviation data
+- Integrates with FAA, Aviation Weather, and other APIs
+- Easy configuration for use with any MCP-compatible LLM client
+- Published as an npm package: [`aviation-mcp`](https://www.npmjs.com/package/aviation-mcp)
 
-### Aviation Weather API
+## Installation
 
-| Feature                      | Status | Notes                                                                                   |
-|------------------------------|--------|-----------------------------------------------------------------------------------------|
-| G-AIRMET                     | ✅     | Implemented with tests for filtering by type (sierra/tango/zulu) and hazard             |
-| SIGMET                       | ✅     | Implemented with tests for domestic and international SIGMETs                           |
-| PIREP                        | ✅     | Implemented with tests for filtering by type (PIREP/AIREP), location, and weather conditions |
-| Wind & Temperature Aloft     | ✅     | Implemented with tests for different regions, altitudes, and forecast periods           |
-| Station Info                 | ✅     | Implemented with tests for retrieving station information by ID and bounding box        |
-| Airport Info                 | ✅     | Implemented with tests for retrieving airport information by ID and bounding box        |
-| Navaid Info                  | ✅     | Implemented with tests for retrieving navigational aid data by ID and bounding box      |
-| Fix Info                     | ✅     | Implemented with tests for retrieving navigational fix data by ID and bounding box      |
-| Feature                      | ✅     | Implemented with tests for retrieving features by bounding box in multiple formats      |
-| Obstacle                     | ✅     | Implemented with tests for retrieving obstacles by bounding box with data validation    |
+You can use Aviation MCP in two ways:
 
-### FAA EIM Weather Proximity API
-| Endpoint/Data | Status | Notes |
-|--------------|--------|-------|
-| Precipitation Data | 🚧  | Not working |
+### 1. Clone the Repository
 
-### FAA Delay API (external-api.faa.gov/asws)
-| Endpoint/Data | Status | Notes |
-|--------------|--------|-------|
-| Airport Delays | ❌ | Not yet implemented |
-| Ground Stops | ❌ | Not yet implemented |
-| Ground Delay Programs | ❌ | Not yet implemented |
+```sh
+git clone https://github.com/your-org/aviation-mcp.git
+cd aviation-mcp
+```
 
-### FAA Airport Information API (external-api.faa.gov/adip)
-| Endpoint/Data | Status | Notes |
-|--------------|--------|-------|
-| Airport Data | 🚧  | Waiting for API access |
-| Runway Information | 🚧  | Waiting for API access |
-| Airport Forecasts | 🚧  | Waiting for API access |
-| Alternate Routes | 🚧  | Waiting for API access |
+### 2. Install from npm
 
-### Aircraft Data APIs
-| Source | Endpoint/Data | Status | Notes |
-|--------|--------------|--------|-------|
-| API Ninjas | Basic Aircraft Info | ✅ | Implemented and available; free tier, limited data |
-| Aviation Stack | Detailed Aircraft Data | ❌ | Not yet implemented; expensive, known reliability issues |
+```sh
+yarn add aviation-mcp
+# or
+npm install aviation-mcp
+```
 
-## Future Integrations
+## Configuration
 
-### Insurance Integration
-- SkyWatch.ai API integration planned for insurance services
+1. **Copy the example config:**
+   
+   ```sh
+   cp mcp.example.json mcp.json
+   ```
 
-### Flight Planning
-- 1800WXBrief.com integration planned for flight plan filing and activation
+2. **Edit `mcp.json`** to insert your API keys and credentials for the services you want to use. See env vars in the file for required fields.
 
-### Optional Integrations
-- OpenSky Network API for ADS-B data (not required for core functionality)
+3. **Supply `mcp.json` to your MCP client** (such as Cursor, Claude, or any compatible LLM client) to enable aviation data access.
 
-## User Information Requirements
+## Available MCP Servers
 
-The platform requires the following user-provided information:
+The following servers are available (see `.cursor/mcp.json` for details):
 
-### Pilot Information
-- Ratings and certifications
-- Currency status
-- Personal minimums
-- Goals and preferences
+- **weather**: Aviation weather data (METAR, TAF, PIREP, SIGMET, G-AIRMET, etc.)
+- **charts**: Sectional, TAC, IFR enroute, and TPP charts
+- **precipitation**: FAA EIM Weather Proximity API (precipitation data)
+- **airports**: FAA airport and runway information
+- **notam**: FAA NOTAM API
+- **aircraft**: Aircraft data from API Ninjas and other sources
 
-### Flight Information
-- Origin/destination
-- Aircraft details
-- Maintenance status
-- Equipment status
-- Flight rules (VFR/IFR)
-- Time of flight
-- Payload/passenger information
-- Mission goals
+## Usage
 
-## Important Notes
+Once configured, your LLM client can connect to the MCP servers and query aviation data as needed. Refer to your client's documentation for details on supplying the `mcp.json` config.
 
-### Aircraft Performance Data
-- Third-party sources will be used for aircraft performance data
-- All data should be verified against official POH/AFM
-- Prominent warnings will be displayed regarding data verification
-- Data includes:
-  - Fuel planning parameters
-  - Weight & Balance calculations
-  - Service envelope
-  - Takeoff & landing distances
-  - IFR/FIKI capability
-  - Oxygen system requirements
-  - Required equipment lists
+## API Coverage
 
-## Referenced Sources
+For a detailed list of supported APIs, endpoints, and integration status, see [`Sources.md`](./Sources.md).
 
-### Primary APIs (In Use or Planned)
-- FAA NOTAM API: https://external-api.faa.gov
-- Aviation Weather API: https://aviationweather.gov/data/api/
-- FAA EIM Weather Proximity API
-- FAA ASWS (Delay Info): https://external-api.faa.gov/asws
-- FAA ADIP (Airport Info): https://external-api.faa.gov/adip
-- API Ninjas Aircraft Data: https://api-ninjas.com/api/aircraft
-- Aviation Stack Aircraft Data: https://aviationstack.com/documentation#aircraft_types
-- SkyWatch.ai Insurance API: http://skywatch.ai
-- 1800WXBrief Flight Planning: https://www.1800wxbrief.com/Website/showFlightPlanForm?tab=1
+## Contributing
 
-### Alternative Sources (Not Currently Used)
-- FAA Delay Info (Legacy Web Interface): https://www.fly.faa.gov/flyfaa/flyfaaindex.jsp
-- OpenSky Network (ADS-B Data): https://openskynetwork.github.io/opensky-api/index.html#state-vectors
-- Charts (APR API): Reference link preserved for documentation
+Contributions are welcome! Please open issues or pull requests for bug fixes, new features, or documentation improvements.
+
+## License
+
+MIT 
