@@ -1,4 +1,4 @@
-import { parseXmlResponse } from '../../common/test/helpers.js';
+
 import { createWeatherClient } from './helpers.js';
 
 describe('Feature API via MCP', () => {
