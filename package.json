@@ -12,7 +12,7 @@
     "aviation-precipitation-mcp": "dist/services/precipitation/src/index.js"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "node --experimental-vm-modules npx jest --maxWorkers=2",
     "test:weather": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/weather/test",
     "test:airports": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/airports/test",
     "test:charts": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/charts/test",
