@@ -95,7 +95,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -142,7 +142,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -165,7 +165,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -188,7 +188,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -211,7 +211,7 @@ const WEATHER_TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -303,7 +303,7 @@ const WEATHER_TOOLS: Tool[] = [
       properties: {
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -322,7 +322,7 @@ const WEATHER_TOOLS: Tool[] = [
       properties: {
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
