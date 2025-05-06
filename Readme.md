@@ -1,4 +1,4 @@
-# Aviation Multi-Channel Platform
+# Aviation Model Context Protocol Servers
 
 Integration platform for various aviation data sources and APIs.
 
