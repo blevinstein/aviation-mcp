@@ -1,16 +1,16 @@
 {
   "name": "aviation-mcp",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "author": "Brian Levinstein <blevinstein@gmail.com>",
   "license": "MIT",
   "bin": {
-    "aviation-weather-mcp": "dist/services/weather/src/index.js",
-    "aviation-charts-mcp": "dist/services/charts/src/index.js",
-    "aviation-notam-mcp": "dist/services/notam/src/index.js",
-    "aviation-airports-mcp": "dist/services/airports/src/index.js",
-    "aviation-precipitation-mcp": "dist/services/precipitation/src/index.js",
-    "aviation-aircraft-mcp": "dist/services/aircraft/src/index.js"
+    "aviation-mcp-weather": "dist/services/weather/src/index.js",
+    "aviation-mcp-charts": "dist/services/charts/src/index.js",
+    "aviation-mcp-notam": "dist/services/notam/src/index.js",
+    "aviation-mcp-airports": "dist/services/airports/src/index.js",
+    "aviation-mcp-precipitation": "dist/services/precipitation/src/index.js",
+    "aviation-mcp-aircraft": "dist/services/aircraft/src/index.js"
   },
   "scripts": {
     "test": "node --experimental-vm-modules npx jest --maxWorkers=2",
@@ -32,8 +32,8 @@
     "build:notam": "tsc -p tsconfig.json && chmod +x dist/services/notam/src/index.js",
     "build:precipitation": "tsc -p tsconfig.json && chmod +x dist/services/precipitation/src/index.js",
     "build:aircraft": "tsc -p tsconfig.json && chmod +x dist/services/aircraft/src/index.js",
-    "build": "npm run build:weather && npm run build:charts && npm run build:airports && npm run build:notam && npm run build:precipitation",
-    "prepare": "npm run build"
+    "build": "yarn build:weather && yarn build:charts && yarn build:airports && yarn build:notam && yarn build:precipitation && yarn build:aircraft",
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

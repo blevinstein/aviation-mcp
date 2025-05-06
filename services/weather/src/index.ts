@@ -7,23 +7,43 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+
+// Enable debug logging
+const DEBUG = process.env.DEBUG === 'true' || true;
+
+function debugLog(...args: any[]) {
+  if (DEBUG) {
+    console.error('[DEBUG]', ...args);
+  }
+}
+
+// Log environment details
+debugLog('Process started with:');
+debugLog('- Node version:', process.version);
+debugLog('- Current directory:', process.cwd());
+debugLog('- ENV vars:', Object.keys(process.env).filter(key => !key.includes('SECRET') && !key.includes('KEY')));
+debugLog('- Arguments:', process.argv);
+
+// Register process error handlers
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err);
+  // Don't exit immediately to allow logging
+  setTimeout(() => process.exit(1), 100);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled promise rejection:', reason);
+});
+
+process.on('exit', (code) => {
+  console.error(`[INFO] Process exiting with code ${code}`);
+});
 
 // Types matching SDK 1.0.1
 interface Tool {
   name: string;
   description: string;
   inputSchema: any;
-}
-
-// Enable debug logging
-const DEBUG = process.env.DEBUG === 'true';
-
-function debugLog(...args: any[]) {
-  if (DEBUG) {
-    console.error('[DEBUG]', ...args);
-  }
 }
 
 // Define the tools directly
@@ -894,6 +914,7 @@ async function handleAirsigmet(format?: string, hazard?: string, level?: number,
 }
 
 // Server setup
+debugLog('Creating MCP server');
 const server = new Server(
   {
     name: "mcp-server/aviation-weather",
@@ -1097,11 +1118,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
 });
 
 async function runServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Aviation Weather MCP Server running on stdio");
+  try {
+    debugLog('Initializing StdioServerTransport');
+    const transport = new StdioServerTransport();
+    
+    debugLog('Connecting to transport');
+    await server.connect(transport);
+    
+    console.error("Aviation Weather MCP Server running on stdio");
+    
+    // Check if stdin/stdout are available
+    debugLog('Checking stdin/stdout availability:');
+    debugLog('- stdin isTTY:', process.stdin.isTTY);
+    debugLog('- stdout isTTY:', process.stdout.isTTY);
+    debugLog('- stderr isTTY:', process.stderr.isTTY);
+    
+    // Check if running in npx environment
+    if (process.env.npm_execpath) {
+      debugLog('Running via npm/npx with execpath:', process.env.npm_execpath);
+    }
+  } catch (error) {
+    console.error("[FATAL] Failed to start server:", error);
+    process.exit(1);
+  }
 }
 
+debugLog('About to start server');
 runServer().catch((error) => {
   console.error("Fatal error running server:", error);
   process.exit(1);
