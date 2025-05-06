@@ -1,5 +1,5 @@
 # Environment variables
-.env
+mcp.json
 
 # Node
 node_modules/
