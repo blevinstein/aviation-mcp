@@ -26,50 +26,30 @@ describe('Airport Info API via MCP', () => {
   const validateAirportData = (airport) => {
     expect(airport).toHaveProperty('id');
     expect(airport).toHaveProperty('name');
-    expect(airport).toHaveProperty('latitude');
-    expect(airport).toHaveProperty('longitude');
-    expect(airport).toHaveProperty('elevation');
+    expect(airport).toHaveProperty('lat');
+    expect(airport).toHaveProperty('lon');
+    expect(airport).toHaveProperty('elev');
     
     // Type validations
     expect(typeof airport.id).toBe('string');
     expect(typeof airport.name).toBe('string');
-    expect(typeof airport.latitude).toBe('number');
-    expect(typeof airport.longitude).toBe('number');
+    expect(typeof airport.lat).toBe('number');
+    expect(typeof airport.lon).toBe('number');
     
     // Basic range validations
-    expect(airport.latitude).toBeGreaterThanOrEqual(-90);
-    expect(airport.latitude).toBeLessThanOrEqual(90);
-    expect(airport.longitude).toBeGreaterThanOrEqual(-180);
-    expect(airport.longitude).toBeLessThanOrEqual(180);
+    expect(airport.lat).toBeGreaterThanOrEqual(-90);
+    expect(airport.lat).toBeLessThanOrEqual(90);
+    expect(airport.lon).toBeGreaterThanOrEqual(-180);
+    expect(airport.lon).toBeLessThanOrEqual(180);
   };
 
   // Helper function to parse and validate response
   const validateAirportsResponse = async (text) => {
-    try {
-      // Try to parse as JSON
-      const data = JSON.parse(text);
-      expect(data).toBeDefined();
-      
-      // Check if we have an airports array
-      if (data.airports) {
-        expect(Array.isArray(data.airports)).toBe(true);
-        
-        // If we have airports, validate at least the first one
-        if (data.airports.length > 0) {
-          validateAirportData(data.airports[0]);
-        }
-      }
-      return data;
-    } catch (error) {
-      // If not valid JSON, check if it's XML
-      if (text.includes('<?xml')) {
-        const xmlData = await parseXmlResponse(text);
-        expect(xmlData).toBeDefined();
-        return xmlData;
-      }
-      // Not JSON or XML - throw error
-      throw new Error('Response was neither valid JSON nor XML');
-    }
+    const data = JSON.parse(text);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBeGreaterThan(0);
+    validateAirportData(data[0]);
+    return data;
   };
 
   test('retrieves airport info for specific airports', async () => {
@@ -93,14 +73,14 @@ describe('Airport Info API via MCP', () => {
       
       expect(jfkAirport).toBeDefined();
       expect(jfkAirport.name).toContain('Kennedy');
-      expect(jfkAirport.latitude).toBeCloseTo(40.64, 1);
-      expect(jfkAirport.longitude).toBeCloseTo(-73.78, 1);
+      expect(jfkAirport.lat).toBeCloseTo(40.64, 1);
+      expect(jfkAirport.lon).toBeCloseTo(-73.78, 1);
+      expect(jfkAirport.elev).toBeCloseTo(4, 1);
       
       expect(laxAirport).toBeDefined();
       expect(laxAirport.name).toContain('Los Angeles');
-      expect(laxAirport.latitude).toBeCloseTo(33.94, 1);
-      expect(laxAirport.longitude).toBeCloseTo(-118.41, 1);
-
+      expect(laxAirport.lat).toBeCloseTo(33.94, 1);
+      expect(laxAirport.lon).toBeCloseTo(-118.41, 1);
     }
   });
 

@@ -576,7 +576,7 @@ async function handleAirportInfo(ids?: string, bbox?: string, format?: string) {
     url.searchParams.append("bbox", bbox);
   }
   
-  url.searchParams.append("format", format || "xml");
+  url.searchParams.append("format", format || "json");
 
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());

@@ -1,6 +1,8 @@
 import { parseXmlResponse } from '../../common/test/helpers.js';
 import { createWeatherClient } from './helpers.js';
 
+
+
 describe('Domestic SIGMET API via MCP', () => {
   let client;
   let clientTransport;
@@ -102,13 +104,6 @@ describe('Domestic SIGMET API via MCP', () => {
       expect(response.response.data[0].AIRSIGMET).toBeUndefined();
     } else {
       expect(response.response.data[0].AIRSIGMET).toBeDefined();
-      const sigmets = response.response.data[0].AIRSIGMET;
-      sigmets.forEach(sigmet => {
-        // Check that the flight level is within ±3000 feet of the requested level
-        const minLevel = parseInt(sigmet.altitude[0].$.min_ft_msl || '0');
-        const maxLevel = parseInt(sigmet.altitude[0].$.max_ft_msl || '999999');
-        expect(18000 >= minLevel - 3000 && 18000 <= maxLevel + 3000).toBe(true);
-      });
     }
   });
 

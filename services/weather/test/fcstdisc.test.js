@@ -27,7 +27,6 @@ describe('Forecast Discussion API via MCP', () => {
       arguments: {
         cwa: 'KOKX',
         type: 'afd',
-        format: 'xml'
       }
     });
 
@@ -46,7 +45,6 @@ describe('Forecast Discussion API via MCP', () => {
       arguments: {
         cwa: 'INVALID',
         type: 'afd',
-        format: 'xml'
       }
     });
 
@@ -64,7 +62,6 @@ describe('Forecast Discussion API via MCP', () => {
       arguments: {
         cwa: 'KOKX',
         type: 'af',
-        format: 'xml'
       }
     });
 
