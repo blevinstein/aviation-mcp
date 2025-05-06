@@ -40,6 +40,7 @@ export const TOOLS: Tool[] = [
       required: ["locId"]
     }
   },
+  /*
   {
     name: "get_airport_changes_logs",
     description: "Get all airport changes logs between two timestamps (global)",
@@ -78,6 +79,7 @@ export const TOOLS: Tool[] = [
       required: ["locId", "from"]
     }
   },
+  */
   {
     name: "list_airports_radius",
     description: "Get list of airports in a radius from a lat/lon point",
@@ -121,6 +123,7 @@ export const TOOLS: Tool[] = [
       required: ["lat", "lon", "bbox"]
     }
   },
+  /*
   {
     name: "list_airports_bbox_for_loc",
     description: "Get list of airports in a bounding box from a specific airport (locId)",
@@ -134,6 +137,7 @@ export const TOOLS: Tool[] = [
       required: ["locId", "bbox"]
     }
   },
+  */
   {
     name: "airport_search",
     description: "Search for airports (POST)",
