@@ -52,7 +52,7 @@ describe('Terminal Area Charts API via MCP', () => {
     expect(url.toLowerCase()).toContain('new_york_tac.pdf');
   });
 
-  test('should handle invalid city name', async () => {
+  test('should handle invalid city name by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_tac',
       arguments: {
@@ -60,17 +60,13 @@ describe('Terminal Area Charts API via MCP', () => {
         format: 'pdf'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    expect(parsedResponse.productSet.status[0].$.code).toBe('404');
+    expect(result.content[0].text).toMatch(/Invalid value for geoname/i);
   });
 
-  test('should handle invalid format', async () => {
+  test('should handle invalid format by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_tac',
       arguments: {
@@ -78,14 +74,10 @@ describe('Terminal Area Charts API via MCP', () => {
         format: 'invalid'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    expect(parsedResponse.productSet.status[0].$.code).toBe('400');
+    expect(result.content[0].text).toMatch(/Invalid value for format/i);
   });
 
   test('should handle different valid city names', async () => {

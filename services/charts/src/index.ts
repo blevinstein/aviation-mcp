@@ -18,7 +18,16 @@ interface Tool {
 }
 
 // Define the tools directly
-const CHARTS_TOOLS: Tool[] = [
+const SECTIONAL_GEONAMES = [
+  "Albuquerque","Anchorage","Atlanta","Bethel","Billings","Brownsville","Cape Lisburne","Charlotte","Cheyenne","Chicago","Cincinnati","Cold Bay","Dallas-Ft Worth","Dawson","Denver","Detroit","Dutch Harbor","El Paso","Fairbanks","Great Falls","Green Bay","Halifax","Hawaiian Islands","Houston","Jacksonville","Juneau","Kansas City","Ketchikan","Klamath Falls","Kodiak","Lake Huron","Las Vegas","Los Angeles","McGrath","Memphis","Miami","Montreal","New Orleans","New York","Nome","Omaha","Phoenix","Point Barrow","Salt Lake City","San Antonio","San Francisco","Seattle","Seward","St Louis","Twin Cities","Washington","Western Aleutian Islands","Whitehorse","Wichita"
+];
+const TAC_GEONAMES = [
+  "Anchorage-Fairbanks","Atlanta","Baltimore-Washington","Boston","Charlotte","Chicago","Cincinnati","Cleveland","Dallas-Ft Worth","Denver-Colorado Springs","Detroit","Houston","Kansas City","Las Vegas","Los Angeles","Memphis","Miami","Minneapolis-St Paul","New Orleans","New York","Philadelphia","Phoenix","Pittsburgh","Puerto Rico-VI","St Louis","Salt Lake City","San Diego","San Francisco","Seattle","Tampa-Orlando"
+];
+const ENROUTE_GEONAMES = ["US","Alaska","Pacific","Caribbean"];
+const ENROUTE_SERIES = ["low","high","area"];
+
+const CHARTS_TOOLS = [
   {
     name: "get_sectional",
     description: "Retrieves sectional charts",
@@ -27,13 +36,41 @@ const CHARTS_TOOLS: Tool[] = [
       properties: {
         geoname: {
           type: "string",
+          enum: SECTIONAL_GEONAMES,
           description: "City or region name for the chart (e.g., 'New York', 'Chicago')"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
         },
         format: {
           type: "string",
-          enum: ["pdf", "tiff", "xml"],
+          enum: ["pdf", "tiff"],
           default: "pdf",
           description: "Format of the chart"
+        }
+      },
+      required: ["geoname"]
+    }
+  },
+  {
+    name: "get_sectional_info",
+    description: "Retrieves sectional chart edition info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        geoname: {
+          type: "string",
+          enum: SECTIONAL_GEONAMES,
+          description: "City or region name for the chart (e.g., 'New York', 'Chicago')"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
         }
       },
       required: ["geoname"]
@@ -47,13 +84,41 @@ const CHARTS_TOOLS: Tool[] = [
       properties: {
         geoname: {
           type: "string",
+          enum: TAC_GEONAMES,
           description: "City or region name for the chart (e.g., 'New York', 'Chicago')"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
         },
         format: {
           type: "string",
-          enum: ["pdf", "tiff", "xml"],
+          enum: ["pdf", "tiff"],
           default: "pdf",
           description: "Format of the chart"
+        }
+      },
+      required: ["geoname"]
+    }
+  },
+  {
+    name: "get_tac_info",
+    description: "Retrieves TAC chart edition info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        geoname: {
+          type: "string",
+          enum: TAC_GEONAMES,
+          description: "City or region name for the chart (e.g., 'New York', 'Chicago')"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
         }
       },
       required: ["geoname"]
@@ -67,22 +132,43 @@ const CHARTS_TOOLS: Tool[] = [
       properties: {
         geoname: {
           type: "string",
-          description: "City or region name for the chart (e.g., 'New York', 'Chicago')"
+          enum: ENROUTE_GEONAMES,
+          description: "Geographic region for requested chart"
         },
         seriesType: {
           type: "string",
-          enum: ["low", "high", "area"],
-          default: "low",
+          enum: ENROUTE_SERIES,
           description: "Type of enroute chart (low altitude, high altitude, or area)"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
         },
         format: {
           type: "string",
-          enum: ["pdf", "tiff", "xml"],
+          enum: ["pdf", "tiff"],
           default: "pdf",
           description: "Format of the chart"
         }
       },
-      required: ["geoname"]
+      required: ["geoname", "seriesType"]
+    }
+  },
+  {
+    name: "get_enroute_info",
+    description: "Retrieves IFR Enroute chart edition info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
+        }
+      }
     }
   },
   {
@@ -95,20 +181,43 @@ const CHARTS_TOOLS: Tool[] = [
           type: "string",
           description: "ICAO airport code (e.g., 'KJFK', 'KLAX')"
         },
-        chartType: {
+        geoname: {
           type: "string",
-          enum: ["IAP", "DP", "STAR", "APD", "ALL"],
-          default: "ALL",
-          description: "Type of TPP chart to retrieve"
+          description: "Geographic region (default US, or state name)"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next", "changeset"],
+          default: "current",
+          description: "Edition of the chart"
         },
         format: {
           type: "string",
-          enum: ["pdf", "tiff", "xml"],
+          enum: ["pdf", "tiff"],
           default: "pdf",
           description: "Format of the chart"
         }
       },
       required: ["icao"]
+    }
+  },
+  {
+    name: "get_tpp_info",
+    description: "Retrieves TPP chart edition info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        geoname: {
+          type: "string",
+          description: "Geographic region (default US, or state name)"
+        },
+        edition: {
+          type: "string",
+          enum: ["current", "next"],
+          default: "current",
+          description: "Edition of the chart"
+        }
+      }
     }
   }
 ];
@@ -117,80 +226,129 @@ const CHARTS_TOOLS: Tool[] = [
 const BASE_URL = 'https://external-api.faa.gov/apra';
 
 // Tool handlers
-async function handleSectional(geoname: string, format: string = 'pdf') {
+function checkEnum(val, allowed, param) {
+  if (val && !allowed.includes(val)) {
+    throw new Error(`Invalid value for ${param}: ${val}`);
+  }
+}
+
+async function handleSectional(geoname, edition = 'current', format = 'pdf') {
+  checkEnum(geoname, SECTIONAL_GEONAMES, 'geoname');
+  checkEnum(format, ["pdf", "tiff"], 'format');
+  checkEnum(edition, ["current", "next"], 'edition');
   const url = new URL(`${BASE_URL}/vfr/sectional/chart`);
   url.searchParams.append("geoname", geoname);
   url.searchParams.append("format", format);
-  
+  url.searchParams.append("edition", edition);
   const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
   const data = await response.text();
-
-  return {
-    content: [{
-      type: "text",
-      text: data
-    }],
-    isError: false
-  };
+  return { content: [{ type: "text", text: data }], isError: false };
 }
 
-async function handleTAC(geoname: string, format: string = 'pdf') {
+async function handleSectionalInfo(geoname, edition = 'current') {
+  checkEnum(geoname, SECTIONAL_GEONAMES, 'geoname');
+  checkEnum(edition, ["current", "next"], 'edition');
+  const url = new URL(`${BASE_URL}/vfr/sectional/info`);
+  url.searchParams.append("geoname", geoname);
+  url.searchParams.append("edition", edition);
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
+  const data = await response.text();
+  return { content: [{ type: "text", text: data }], isError: false };
+}
+
+async function handleTAC(geoname, edition = 'current', format = 'pdf') {
+  checkEnum(geoname, TAC_GEONAMES, 'geoname');
+  checkEnum(format, ["pdf", "tiff"], 'format');
+  checkEnum(edition, ["current", "next"], 'edition');
   const url = new URL(`${BASE_URL}/vfr/tac/chart`);
   url.searchParams.append("geoname", geoname);
   url.searchParams.append("format", format);
-  
+  url.searchParams.append("edition", edition);
   const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
   const data = await response.text();
-
-  return {
-    content: [{
-      type: "text",
-      text: data
-    }],
-    isError: false
-  };
+  return { content: [{ type: "text", text: data }], isError: false };
 }
 
-async function handleEnroute(geoname: string, seriesType: string = 'low', format: string = 'pdf') {
+async function handleTACInfo(geoname, edition = 'current') {
+  checkEnum(geoname, TAC_GEONAMES, 'geoname');
+  checkEnum(edition, ["current", "next"], 'edition');
+  const url = new URL(`${BASE_URL}/vfr/tac/info`);
+  url.searchParams.append("geoname", geoname);
+  url.searchParams.append("edition", edition);
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
+  const data = await response.text();
+  return { content: [{ type: "text", text: data }], isError: false };
+}
+
+async function handleEnroute(geoname, seriesType, edition = 'current', format = 'pdf') {
+  checkEnum(geoname, ENROUTE_GEONAMES, 'geoname');
+  checkEnum(seriesType, ENROUTE_SERIES, 'seriesType');
+  checkEnum(format, ["pdf", "tiff"], 'format');
+  checkEnum(edition, ["current", "next"], 'edition');
   const url = new URL(`${BASE_URL}/enroute/chart`);
   url.searchParams.append("geoname", geoname);
   url.searchParams.append("seriesType", seriesType);
   url.searchParams.append("format", format);
-  
+  url.searchParams.append("edition", edition);
   const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
   const data = await response.text();
-
-  return {
-    content: [{
-      type: "text",
-      text: data
-    }],
-    isError: false
-  };
+  return { content: [{ type: "text", text: data }], isError: false };
 }
 
-async function handleTPP(icao: string, chartType: string = 'ALL', format: string = 'pdf') {
-  // TPP uses 'dtpp' in the URL path
-  const url = new URL(`${BASE_URL}/dtpp/chart`);
-  
-  // For TPP, we need to pass geoname instead of icao to match the API
-  url.searchParams.append("geoname", "US");  // Use US as default region
-  url.searchParams.append("airport", icao);  // Add the ICAO airport code
-  if (chartType && chartType !== 'ALL') {
-    url.searchParams.append("chartType", chartType);
-  }
-  url.searchParams.append("format", format);
-  
+async function handleEnrouteInfo(edition = 'current') {
+  checkEnum(edition, ["current", "next"], 'edition');
+  const url = new URL(`${BASE_URL}/enroute/info`);
+  url.searchParams.append("edition", edition);
   const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
   const data = await response.text();
+  return { content: [{ type: "text", text: data }], isError: false };
+}
 
-  return {
-    content: [{
-      type: "text",
-      text: data
-    }],
-    isError: false
-  };
+async function handleTPP(icao, geoname = 'US', edition = 'current', format = 'pdf') {
+  checkEnum(format, ["pdf", "tiff"], 'format');
+  checkEnum(edition, ["current", "next", "changeset"], 'edition');
+  const url = new URL(`${BASE_URL}/dtpp/chart`);
+  url.searchParams.append("geoname", geoname);
+  url.searchParams.append("airport", icao);
+  url.searchParams.append("format", format);
+  url.searchParams.append("edition", edition);
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
+  const data = await response.text();
+  return { content: [{ type: "text", text: data }], isError: false };
+}
+
+async function handleTPPInfo(geoname = 'US', edition = 'current') {
+  checkEnum(edition, ["current", "next"], 'edition');
+  const url = new URL(`${BASE_URL}/dtpp/info`);
+  url.searchParams.append("geoname", geoname);
+  url.searchParams.append("edition", edition);
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
+  }
+  const data = await response.text();
+  return { content: [{ type: "text", text: data }], isError: false };
 }
 
 // Server setup
@@ -215,39 +373,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   try {
     switch (request.params.name) {
       case "get_sectional": {
-        const { geoname, format } = request.params.arguments as {
-          geoname: string;
-          format?: string;
-        };
-        return await handleSectional(geoname, format);
+        const { geoname, edition, format } = request.params.arguments;
+        return await handleSectional(geoname, edition, format);
       }
-
+      case "get_sectional_info": {
+        const { geoname, edition } = request.params.arguments;
+        return await handleSectionalInfo(geoname, edition);
+      }
       case "get_tac": {
-        const { geoname, format } = request.params.arguments as {
-          geoname: string;
-          format?: string;
-        };
-        return await handleTAC(geoname, format);
+        const { geoname, edition, format } = request.params.arguments;
+        return await handleTAC(geoname, edition, format);
       }
-
+      case "get_tac_info": {
+        const { geoname, edition } = request.params.arguments;
+        return await handleTACInfo(geoname, edition);
+      }
       case "get_enroute": {
-        const { geoname, seriesType, format } = request.params.arguments as {
-          geoname: string;
-          seriesType?: string;
-          format?: string;
-        };
-        return await handleEnroute(geoname, seriesType, format);
+        const { geoname, seriesType, edition, format } = request.params.arguments;
+        return await handleEnroute(geoname, seriesType, edition, format);
       }
-
+      case "get_enroute_info": {
+        const { edition } = request.params.arguments;
+        return await handleEnrouteInfo(edition);
+      }
       case "get_tpp": {
-        const { icao, chartType, format } = request.params.arguments as {
-          icao: string;
-          chartType?: string;
-          format?: string;
-        };
-        return await handleTPP(icao, chartType, format);
+        const { icao, geoname, edition, format } = request.params.arguments;
+        return await handleTPP(icao, geoname, edition, format);
       }
-
+      case "get_tpp_info": {
+        const { geoname, edition } = request.params.arguments;
+        return await handleTPPInfo(geoname, edition);
+      }
       default:
         return {
           content: [{

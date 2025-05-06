@@ -100,7 +100,7 @@ describe('IFR Enroute Charts API via MCP', () => {
     expect(product.$.url).toMatch(/^https:\/\/aeronav\.faa\.gov\/enroute\/\d{2}-\d{2}-\d{4}\/darea\.zip$/);
   });
 
-  test('should handle invalid region', async () => {
+  test('should handle invalid region by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_enroute',
       arguments: {
@@ -109,17 +109,13 @@ describe('IFR Enroute Charts API via MCP', () => {
         format: 'pdf'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    expect(parsedResponse.productSet.status[0].$.code).toBe('404');
+    expect(result.content[0].text).toMatch(/Invalid value for geoname/i);
   });
 
-  test('should handle invalid series type', async () => {
+  test('should handle invalid series type by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_enroute',
       arguments: {
@@ -128,13 +124,9 @@ describe('IFR Enroute Charts API via MCP', () => {
         format: 'pdf'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    expect(parsedResponse.productSet.status[0].$.code).toBe('404');
+    expect(result.content[0].text).toMatch(/Invalid value for seriesType/i);
   });
 }); 

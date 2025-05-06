@@ -51,7 +51,7 @@ describe('Sectional Charts API via MCP', () => {
     expect(product.$.url).toMatch(/^https:\/\/aeronav\.faa\.gov\/visual\/\d{2}-\d{2}-\d{4}\/PDFs\/New_York\.pdf$/);
   });
 
-  test('should handle invalid city name by defaulting to US', async () => {
+  test('should handle invalid city name by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_sectional',
       arguments: {
@@ -59,19 +59,13 @@ describe('Sectional Charts API via MCP', () => {
         format: 'pdf'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    const edition = parsedResponse.productSet.edition[0];
-    expect(edition.$.geoname).toBe('US');
-    expect(edition.$.format).toBe('ZIP');
+    expect(result.content[0].text).toMatch(/Invalid value for geoname/i);
   });
 
-  test('should handle invalid format by defaulting to ZIP', async () => {
+  test('should handle invalid format by returning an error', async () => {
     const result = await client.callTool({
       name: 'get_sectional',
       arguments: {
@@ -79,16 +73,10 @@ describe('Sectional Charts API via MCP', () => {
         format: 'invalid'
       }
     });
-    
-    expect(result.isError).toBeFalsy();
+    expect(result.isError).toBeTruthy();
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
-    
-    const xml = result.content[0].text;
-    const parsedResponse = await parseXmlResponse(xml);
-    const edition = parsedResponse.productSet.edition[0];
-    expect(edition.$.format).toBe('ZIP');
-    expect(edition.product[0].$.url).toContain('sectional-files/New_York.zip');
+    expect(result.content[0].text).toMatch(/Invalid value for format/i);
   });
 
   test('should handle different valid city names', async () => {
