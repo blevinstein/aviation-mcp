@@ -376,6 +376,33 @@ const WEATHER_TOOLS: Tool[] = [
       }
     }
   },
+  {
+    name: "get_airsigmet",
+    description: "Retrieves Domestic SIGMETs for the United States.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        format: {
+          type: "string",
+          enum: ["raw", "json", "xml"],
+          description: "Format"
+        },
+        hazard: {
+          type: "string",
+          enum: ["conv", "turb", "ice", "ifr"],
+          description: "Hazard"
+        },
+        level: {
+          type: "number",
+          description: "The level +-3000' to search"
+        },
+        date: {
+          type: "string",
+          description: "Date (yyyymmdd_hhmm or yyyy-mm-ddThh:mm:ssZ)"
+        }
+      }
+    }
+  },
 ];
 
 // Tool handlers
@@ -860,6 +887,28 @@ async function handleGairmet(type?: string, hazard?: string, format?: string) {
   };
 }
 
+// Add handler for get_airsigmet
+async function handleAirsigmet(format?: string, hazard?: string, level?: number, date?: string) {
+  debugLog('handleAirsigmet called with:', { format, hazard, level, date });
+  const url = new URL("https://aviationweather.gov/api/data/airsigmet");
+  if (format) url.searchParams.append("format", format);
+  if (hazard) url.searchParams.append("hazard", hazard);
+  if (level !== undefined) url.searchParams.append("level", level.toString());
+  if (date) url.searchParams.append("date", date);
+  debugLog('Making request to:', url.toString());
+  const response = await fetch(url.toString());
+  const data = await (format === "json" ? response.json() : response.text());
+  debugLog('Response status:', response.status);
+  debugLog('Response data preview:', typeof data === 'string' ? data.substring(0, 200) + '...' : 'Non-string data');
+  return {
+    content: [{
+      type: "text",
+      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+    }],
+    isError: false
+  };
+}
+
 // Server setup
 const server = new Server(
   {
@@ -1018,6 +1067,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
           format?: string;
         };
         return await handleGairmet(type, hazard, format);
+      }
+
+      case "get_airsigmet": {
+        const { format, hazard, level, date } = request.params.arguments as {
+          format?: string;
+          hazard?: string;
+          level?: number;
+          date?: string;
+        };
+        return await handleAirsigmet(format, hazard, level, date);
       }
 
       default:

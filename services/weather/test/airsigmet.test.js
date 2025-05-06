@@ -24,9 +24,6 @@ describe('Domestic SIGMET API via MCP', () => {
   });
 
   test('should retrieve all SIGMETs', async () => {
-    // To be implemented once airsigmet tool is added
-    // This test would be something like:
-    /*
     const result = await client.callTool({
       name: 'get_airsigmet',
       arguments: {
@@ -54,16 +51,9 @@ describe('Domestic SIGMET API via MCP', () => {
         expect(sigmet.valid_time_to).toBeDefined();
       });
     }
-    */
-    
-    // Temporary solution to make the test pass until tool is implemented
-    expect(true).toBe(true);
   });
 
   test('should filter SIGMETs by hazard type', async () => {
-    // To be implemented once airsigmet tool is added
-    // This test would be something like:
-    /*
     const result = await client.callTool({
       name: 'get_airsigmet',
       arguments: {
@@ -89,16 +79,9 @@ describe('Domestic SIGMET API via MCP', () => {
         expect(sigmet.hazard[0].$.type).toBe('CONVECTIVE');
       });
     }
-    */
-    
-    // Temporary solution to make the test pass until tool is implemented
-    expect(true).toBe(true);
   });
 
   test('should filter SIGMETs by flight level', async () => {
-    // To be implemented once airsigmet tool is added
-    // This test would be something like:
-    /*
     const result = await client.callTool({
       name: 'get_airsigmet',
       arguments: {
@@ -127,16 +110,9 @@ describe('Domestic SIGMET API via MCP', () => {
         expect(18000 >= minLevel - 3000 && 18000 <= maxLevel + 3000).toBe(true);
       });
     }
-    */
-    
-    // Temporary solution to make the test pass until tool is implemented
-    expect(true).toBe(true);
   });
 
   test('should handle invalid hazard type', async () => {
-    // To be implemented once airsigmet tool is added
-    // This test would be something like:
-    /*
     const result = await client.callTool({
       name: 'get_airsigmet',
       arguments: {
@@ -153,9 +129,5 @@ describe('Domestic SIGMET API via MCP', () => {
     const response = await parseXmlResponse(text);
     expect(response.response.data[0].$.num_results).toBe('0');
     expect(response.response.data[0].AIRSIGMET).toBeUndefined();
-    */
-    
-    // Temporary solution to make the test pass until tool is implemented
-    expect(true).toBe(true);
   });
 }); 
