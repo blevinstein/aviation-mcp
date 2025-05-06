@@ -3,6 +3,14 @@
     "weather": {
       "command": "npx",
       "args": ["ts-node", "--esm", "-T", "./services/weather/src/index.ts"]
+    },
+    "charts": {
+      "command": "npx",
+      "args": ["ts-node", "--esm", "-T", "./services/charts/src/index.ts"]
+    },
+    "precipitation": {
+      "command": "npx",
+      "args": ["ts-node", "--esm", "-T", "./services/precipitation/src/index.ts"]
     }
   }
 } 
