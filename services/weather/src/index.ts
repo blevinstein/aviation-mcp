@@ -127,12 +127,6 @@ const WEATHER_TOOLS: Tool[] = [
           enum: ["06", "12", "24"],
           description: "Forecast cycle: 06, 12, or 24 hours"
         },
-        format: {
-          type: "string",
-          enum: ["xml", "json"],
-          default: "xml",
-          description: "Response format"
-        }
       }
     }
   },
@@ -482,8 +476,8 @@ async function handlePirep(type?: string, bbox?: string, format?: string) {
   };
 }
 
-async function handleWindTemp(region?: string, level?: string, fcst?: string, format?: string) {
-  debugLog('handleWindTemp called with:', { region, level, fcst, format });
+async function handleWindTemp(region?: string, level?: string, fcst?: string) {
+  debugLog('handleWindTemp called with:', { region, level, fcst });
   
   const url = new URL("https://aviationweather.gov/api/data/windtemp");
   
@@ -501,13 +495,13 @@ async function handleWindTemp(region?: string, level?: string, fcst?: string, fo
 
   debugLog('Making request to:', url.toString());
   const response = await fetch(url.toString());
-  const data = await (format === "json" ? response.json() : response.text());
-  debugLog('Response status:', response.status);
+  const data = await response.text();
+  debugLog(`Response data: ${data}`);
 
   return {
     content: [{
       type: "text",
-      text: format === "json" ? JSON.stringify(data, null, 2) : data as string
+      text: data
     }],
     isError: false
   };
@@ -921,13 +915,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case "get_windtemp": {
-        const { region, level, fcst, format } = request.params.arguments as {
+        const { region, level, fcst } = request.params.arguments as {
           region?: string;
           level?: string;
           fcst?: string;
-          format?: string;
         };
-        return await handleWindTemp(region, level, fcst, format);
+        return await handleWindTemp(region, level, fcst);
       }
 
       case "get_station_info": {
