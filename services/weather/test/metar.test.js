@@ -1,46 +1,15 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { parseString } from 'xml2js';
-import { resolve } from 'path';
-
-// Helper function to parse XML response
-const parseXmlResponse = (xmlString) => {
-  return new Promise((resolve, reject) => {
-    parseString(xmlString, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    });
-  });
-};
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createWeatherClient } from './helpers.js';
 
 describe('METAR API via MCP', () => {
   let client;
   let clientTransport;
 
   beforeAll(async () => {
-    const serverPath = resolve('services/weather/src/index.ts');
-    
-    // Create a stdio transport that will start the server
-    clientTransport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-      name: "weather-server"
-    });
-    
     // Create and initialize client
-    client = new Client(
-      {
-        name: "test-client",
-        version: "1.0.0"
-      }, 
-      {
-        capabilities: {
-          tools: {}
-        }
-      }
-    );
-    
-    await client.connect(clientTransport);
+    const connection = await createWeatherClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
     
     // Verify tools are available
     const tools = await client.listTools();

@@ -1,17 +1,43 @@
-const { makeRequest } = require('./helpers');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { parseXmlResponse } from '../../common/test/helpers.js';
+import { createChartsClient } from './helpers.js';
 
-describe('Sectional Charts API', () => {
+describe('Sectional Charts API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    // Create and initialize client
+    const connection = await createChartsClient();
+    client = connection.client;
+    clientTransport = connection.clientTransport;
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-sectional')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
+
   test('should return a 200 status code and PDF URL for a valid city name', async () => {
-    const { status, text } = await makeRequest('/vfr/sectional/chart', {
-      geoname: 'New York',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-sectional',
+      arguments: {
+        geoname: 'New York',
+        format: 'pdf'
+      }
     });
     
-    expect(status).toBe(200);
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
     
-    const result = await parseXmlResponse(text);
-    const productSet = result.productSet;
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const productSet = parsedResponse.productSet;
     
     // Check status code
     expect(productSet.status[0].$.code).toBe('200');
@@ -26,27 +52,41 @@ describe('Sectional Charts API', () => {
   });
 
   test('should handle invalid city name by defaulting to US', async () => {
-    const { status, text } = await makeRequest('/vfr/sectional/chart', {
-      geoname: 'InvalidCity123',
-      format: 'pdf'
+    const result = await client.callTool({
+      name: 'get-sectional',
+      arguments: {
+        geoname: 'InvalidCity123',
+        format: 'pdf'
+      }
     });
-
-    expect(status).toBe(200);
-    const result = await parseXmlResponse(text);
-    const edition = result.productSet.edition[0];
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const edition = parsedResponse.productSet.edition[0];
     expect(edition.$.geoname).toBe('US');
     expect(edition.$.format).toBe('ZIP');
   });
 
   test('should handle invalid format by defaulting to ZIP', async () => {
-    const { status, text } = await makeRequest('/vfr/sectional/chart', {
-      geoname: 'New York',
-      format: 'invalid'
+    const result = await client.callTool({
+      name: 'get-sectional',
+      arguments: {
+        geoname: 'New York',
+        format: 'invalid'
+      }
     });
-
-    expect(status).toBe(200);
-    const result = await parseXmlResponse(text);
-    const edition = result.productSet.edition[0];
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const edition = parsedResponse.productSet.edition[0];
     expect(edition.$.format).toBe('ZIP');
     expect(edition.product[0].$.url).toContain('sectional-files/New_York.zip');
   });
@@ -54,14 +94,21 @@ describe('Sectional Charts API', () => {
   test('should handle different valid city names', async () => {
     const cities = ['Los Angeles', 'Chicago', 'Miami', 'Seattle'];
     for (const city of cities) {
-      const { status, text } = await makeRequest('/vfr/sectional/chart', {
-        geoname: city,
-        format: 'pdf'
+      const result = await client.callTool({
+        name: 'get-sectional',
+        arguments: {
+          geoname: city,
+          format: 'pdf'
+        }
       });
-
-      expect(status).toBe(200);
-      const result = await parseXmlResponse(text);
-      const product = result.productSet.edition[0].product[0];
+      
+      expect(result.isError).toBeFalsy();
+      expect(result.content).toBeDefined();
+      expect(result.content[0].type).toBe('text');
+      
+      const xml = result.content[0].text;
+      const parsedResponse = await parseXmlResponse(xml);
+      const product = parsedResponse.productSet.edition[0].product[0];
       expect(product.$.productName).toBe('SECTIONAL');
       expect(product.$.url).toContain(`${city.replace(' ', '_')}.pdf`);
     }
