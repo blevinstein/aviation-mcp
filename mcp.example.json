@@ -2,15 +2,15 @@
   "mcpServers": {
     "weather": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/weather/src/index.ts"]
+      "args": ["-y", "aviation-weather-mcp"]
     },
     "charts": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/charts/src/index.ts"]
+      "args": ["-y", "aviation-charts-mcp"]
     },
     "precipitation": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/precipitation/src/index.ts"],
+      "args": ["-y", "aviation-precipitation-mcp"],
       "env": {
         "FAA_CLIENT_ID": "",
         "FAA_CLIENT_SECRET": ""
@@ -18,7 +18,7 @@
     },
     "airports": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/airports/src/index.ts"],
+      "args": ["-y", "aviation-airports-mcp"],
       "env": {
         "FAA_CLIENT_ID": "",
         "FAA_CLIENT_SECRET": ""
@@ -26,7 +26,7 @@
     },
     "notam": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/notam/src/index.ts"],
+      "args": ["-y", "aviation-notam-mcp"],
       "env": {
         "FAA_CLIENT_ID": "",
         "FAA_CLIENT_SECRET": ""
@@ -34,7 +34,7 @@
     },
     "aircraft": {
       "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./services/aircraft/src/index.ts"],
+      "args": ["-y", "aviation-aircraft-mcp"],
       "env": {
         "API_NINJA_KEY": ""
       }
