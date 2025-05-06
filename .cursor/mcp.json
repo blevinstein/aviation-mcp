@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "weather": {
+      "command": "npx",
+      "args": ["ts-node", "--esm", "-T", "./services/weather/src/index.ts"]
+    }
+  }
+} 

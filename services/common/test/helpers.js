@@ -1,4 +1,4 @@
-const { parseString } = require('xml2js');
+import { parseString } from 'xml2js';
 
 /**
  * Parse an XML string into a JavaScript object using xml2js.
@@ -14,6 +14,4 @@ const parseXmlResponse = (xmlString) => {
   });
 };
 
-module.exports = {
-  parseXmlResponse
-}; 
+export { parseXmlResponse }; 

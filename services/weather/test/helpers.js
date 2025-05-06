@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 const BASE_URL = 'https://aviationweather.gov';
 
@@ -10,6 +10,4 @@ const makeRequest = async (endpoint, params = {}) => {
   return { status: response.status, text };
 };
 
-module.exports = {
-  makeRequest
-}; 
+export { makeRequest }; 

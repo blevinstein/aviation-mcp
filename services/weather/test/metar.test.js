@@ -1,17 +1,74 @@
-const { makeRequest } = require('./helpers');
-const { parseXmlResponse } = require('../../common/test/helpers');
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { parseString } from 'xml2js';
+import { resolve } from 'path';
 
-describe('METAR API', () => {
-  test('should return METAR data for a single station', async () => {
-    const { status, text } = await makeRequest('/api/data/metar', {
-      ids: 'KJFK',
-      format: 'xml'
+// Helper function to parse XML response
+const parseXmlResponse = (xmlString) => {
+  return new Promise((resolve, reject) => {
+    parseString(xmlString, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
     });
+  });
+};
 
-    expect(status).toBe(200);
+describe('METAR API via MCP', () => {
+  let client;
+  let clientTransport;
+
+  beforeAll(async () => {
+    const serverPath = resolve('services/weather/src/index.ts');
     
-    const result = await parseXmlResponse(text);
-    const response = result.response;
+    // Create a stdio transport that will start the server
+    clientTransport = new StdioClientTransport({
+      command: 'node',
+      args: [serverPath],
+      name: "weather-server"
+    });
+    
+    // Create and initialize client
+    client = new Client(
+      {
+        name: "test-client",
+        version: "1.0.0"
+      }, 
+      {
+        capabilities: {
+          tools: {}
+        }
+      }
+    );
+    
+    await client.connect(clientTransport);
+    
+    // Verify tools are available
+    const tools = await client.listTools();
+    expect(tools.tools.some(tool => tool.name === 'get-metar')).toBe(true);
+  });
+
+  afterAll(async () => {
+    if (clientTransport) {
+      await clientTransport.close?.();
+    }
+  });
+
+  test('should return METAR data for a single station', async () => {
+    const result = await client.callTool({
+      name: 'get-metar',
+      arguments: {
+        ids: 'KJFK',
+        format: 'xml'
+      }
+    });
+    
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const response = parsedResponse.response;
     
     // Check that we got data
     expect(response.data).toBeDefined();
@@ -23,15 +80,21 @@ describe('METAR API', () => {
   });
 
   test('should return METAR data for multiple stations', async () => {
-    const { status, text } = await makeRequest('/api/data/metar', {
-      ids: 'KJFK,KLAX',
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-metar',
+      arguments: {
+        ids: 'KJFK,KLAX',
+        format: 'xml'
+      }
     });
-
-    expect(status).toBe(200);
     
-    const result = await parseXmlResponse(text);
-    const response = result.response;
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const response = parsedResponse.response;
     
     // Check that we got data for both stations
     expect(response.data).toBeDefined();
@@ -44,15 +107,21 @@ describe('METAR API', () => {
   });
 
   test('should handle invalid station', async () => {
-    const { status, text } = await makeRequest('/api/data/metar', {
-      ids: 'INVALID',
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-metar',
+      arguments: {
+        ids: 'INVALID',
+        format: 'xml'
+      }
     });
-
-    expect(status).toBe(200);  // API returns 200 even for invalid stations
     
-    const result = await parseXmlResponse(text);
-    const response = result.response;
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const response = parsedResponse.response;
     
     // Should return empty data array
     expect(response.data[0].$).toBeDefined();
@@ -61,17 +130,23 @@ describe('METAR API', () => {
   });
 
   test('should handle historical data request', async () => {
-    const { status, text } = await makeRequest('/api/data/metar', {
-      ids: 'KJFK',
-      hours: 3,
-      mostRecent: false,
-      format: 'xml'
+    const result = await client.callTool({
+      name: 'get-metar',
+      arguments: {
+        ids: 'KJFK',
+        hours: 3,
+        mostRecent: false,
+        format: 'xml'
+      }
     });
-
-    expect(status).toBe(200);
     
-    const result = await parseXmlResponse(text);
-    const response = result.response;
+    expect(result.isError).toBeFalsy();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    
+    const xml = result.content[0].text;
+    const parsedResponse = await parseXmlResponse(xml);
+    const response = parsedResponse.response;
     
     // Should return multiple observations
     expect(response.data[0].METAR.length).toBeGreaterThan(1);
