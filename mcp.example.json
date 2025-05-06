@@ -10,11 +10,9 @@
       }
     },
     "aviation": {
-      "command": "env",
+      "command": "npx",
       "args": [
-        "API_NINJA_KEY=",
-        "FAA_CLIENT_ID=",
-        "FAA_CLIENT_SECRET=",
+        "-y",
         "aviation-mcp"
       ]
     }
