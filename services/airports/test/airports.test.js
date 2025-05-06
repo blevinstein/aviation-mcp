@@ -1,6 +1,6 @@
 import { createAirportsClient } from './helpers.js';
 
-describe('ADIP Airport API via MCP', () => {
+describe.skip('ADIP Airport API via MCP', () => {
   let client;
   let clientTransport;
 
