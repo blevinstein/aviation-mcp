@@ -16,7 +16,7 @@ You can use Aviation MCP in two ways:
 ### 1. Clone the Repository
 
 ```sh
-git clone https://github.com/your-org/aviation-mcp.git
+git clone https://github.com/blevinstein/aviation-mcp.git
 cd aviation-mcp
 ```
 
