@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
 import { parseString } from 'xml2js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { resolve } from 'path';
+
+dotenv.config();
 
 /**
  * Parse an XML string into a JavaScript object using xml2js.
@@ -26,11 +29,19 @@ export function parseXmlResponse(xmlString) {
 export async function createClient(serverPath, clientName = "test-client") {
   const fullServerPath = resolve(serverPath);
   
-  // Create a stdio transport that will start the server
+  // Prepare environment variables for the server process
+  const env = {
+    ...process.env,
+    FAA_CLIENT_ID: process.env.FAA_CLIENT_ID,
+    FAA_CLIENT_SECRET: process.env.FAA_CLIENT_SECRET,
+    API_NINJA_KEY: process.env.API_NINJA_KEY,
+  };
+  
+  // Create a stdio transport that will start the server with the correct env
   const clientTransport = new StdioClientTransport({
     command: 'node',
     args: [fullServerPath],
-    name: serverPath
+    env,
   });
   
   // Create and initialize client

@@ -45,8 +45,8 @@ Integration platform for various aviation data sources and APIs.
 ### Aircraft Data APIs
 | Source | Endpoint/Data | Status | Notes |
 |--------|--------------|--------|-------|
-| API Ninjas | Basic Aircraft Info | ❌ | Free tier available, limited data |
-| Aviation Stack | Detailed Aircraft Data | ❌ | Expensive, known reliability issues |
+| API Ninjas | Basic Aircraft Info | ✅ | Implemented and available; free tier, limited data |
+| Aviation Stack | Detailed Aircraft Data | ❌ | Not yet implemented; expensive, known reliability issues |
 
 ## Future Integrations
 

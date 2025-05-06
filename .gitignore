@@ -1,4 +1,5 @@
 # Environment variables
+.env
 mcp.json
 
 # Node
