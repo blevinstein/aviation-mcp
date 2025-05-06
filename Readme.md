@@ -44,11 +44,16 @@ npm install aviation-mcp
 
 The following servers are available (see `.cursor/mcp.json` for details):
 
+### Official Sources
+
 - **weather**: Aviation weather data (METAR, TAF, PIREP, SIGMET, G-AIRMET, etc.)
 - **charts**: Sectional, TAC, IFR enroute, and TPP charts
 - **precipitation**: FAA EIM Weather Proximity API (precipitation data)
 - **airports**: FAA airport and runway information
 - **notam**: FAA NOTAM API
+
+### Unofficial Sources (Caution!!)
+
 - **aircraft**: Aircraft data from API Ninjas and other sources
 
 ## Usage
