@@ -8,23 +8,27 @@
     "aviation-weather-mcp": "dist/services/weather/src/index.js",
     "aviation-charts-mcp": "dist/services/charts/src/index.js",
     "aviation-notam-mcp": "dist/services/notam/src/index.js",
-    "aviation-airports-mcp": "dist/services/airports/src/index.js"
+    "aviation-airports-mcp": "dist/services/airports/src/index.js",
+    "aviation-precipitation-mcp": "dist/services/precipitation/src/index.js"
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:weather": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/weather/test",
-    "test:airports": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/airports/test",
-    "test:charts": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/charts/test",
-    "test:notam": "node --experimental-vm-modules node_modules/jest/bin/jest.js services/notam/test",
+    "test:weather": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/weather/test",
+    "test:airports": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/airports/test",
+    "test:charts": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/charts/test",
+    "test:notam": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/notam/test",
+    "test:precipitation": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/precipitation/test",
     "start:weather": "node services/weather/src/index.ts",
     "start:charts": "node services/charts/src/index.ts",
     "start:airports": "node services/airports/src/index.ts",
     "start:notam": "node services/notam/src/index.ts",
+    "start:precipitation": "node services/precipitation/src/index.ts",
     "build:weather": "tsc -p tsconfig.json && chmod +x dist/services/weather/src/index.js",
     "build:charts": "tsc -p tsconfig.json && chmod +x dist/services/charts/src/index.js",
     "build:airports": "tsc -p tsconfig.json && chmod +x dist/services/airports/src/index.js",
     "build:notam": "tsc -p tsconfig.json && chmod +x dist/services/notam/src/index.js",
-    "build": "npm run build:weather && npm run build:charts && npm run build:airports && npm run build:notam",
+    "build:precipitation": "tsc -p tsconfig.json && chmod +x dist/services/precipitation/src/index.js",
+    "build": "npm run build:weather && npm run build:charts && npm run build:airports && npm run build:notam && npm run build:precipitation",
     "prepare": "npm run build"
   },
   "devDependencies": {
