@@ -8,7 +8,7 @@ import { resolve } from 'path';
  * @param {string} xmlString - The XML string to parse
  * @returns {Promise<object>} The parsed XML as a JavaScript object
  */
-export function parseXmlResponse (xmlString) {
+export function parseXmlResponse(xmlString) {
   return new Promise((resolve, reject) => {
     parseString(xmlString, (err, result) => {
       if (err) reject(err);
