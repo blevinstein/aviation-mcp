@@ -9,7 +9,8 @@
     "aviation-charts-mcp": "dist/services/charts/src/index.js",
     "aviation-notam-mcp": "dist/services/notam/src/index.js",
     "aviation-airports-mcp": "dist/services/airports/src/index.js",
-    "aviation-precipitation-mcp": "dist/services/precipitation/src/index.js"
+    "aviation-precipitation-mcp": "dist/services/precipitation/src/index.js",
+    "aviation-aircraft-mcp": "dist/services/aircraft/src/index.js"
   },
   "scripts": {
     "test": "node --experimental-vm-modules npx jest --maxWorkers=2",
@@ -18,16 +19,19 @@
     "test:charts": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/charts/test",
     "test:notam": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/notam/test",
     "test:precipitation": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/precipitation/test",
+    "test:aircraft": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/aircraft/test",
     "start:weather": "node services/weather/src/index.ts",
     "start:charts": "node services/charts/src/index.ts",
     "start:airports": "node services/airports/src/index.ts",
     "start:notam": "node services/notam/src/index.ts",
     "start:precipitation": "node services/precipitation/src/index.ts",
+    "start:aircraft": "node services/aircraft/src/index.ts",
     "build:weather": "tsc -p tsconfig.json && chmod +x dist/services/weather/src/index.js",
     "build:charts": "tsc -p tsconfig.json && chmod +x dist/services/charts/src/index.js",
     "build:airports": "tsc -p tsconfig.json && chmod +x dist/services/airports/src/index.js",
     "build:notam": "tsc -p tsconfig.json && chmod +x dist/services/notam/src/index.js",
     "build:precipitation": "tsc -p tsconfig.json && chmod +x dist/services/precipitation/src/index.js",
+    "build:aircraft": "tsc -p tsconfig.json && chmod +x dist/services/aircraft/src/index.js",
     "build": "npm run build:weather && npm run build:charts && npm run build:airports && npm run build:notam && npm run build:precipitation",
     "prepare": "npm run build"
   },
