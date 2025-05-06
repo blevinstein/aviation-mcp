@@ -112,7 +112,7 @@ describe('PIREP API via MCP', () => {
           const turbulence = report.turbulence_condition[0];
           if (turbulence.$) {
             if (turbulence.$.turbulence_type) {
-              expect(['CHOP', 'LLWS']).toContain(turbulence.$.turbulence_type);
+              expect(['CHOP', 'LLWS', 'CAT']).toContain(turbulence.$.turbulence_type);
             }
             if (turbulence.$.turbulence_intensity) {
               expect(['NEG', 'LGT', 'LGT-MOD', 'MOD']).toContain(turbulence.$.turbulence_intensity);
