@@ -25,7 +25,7 @@ export function parseXmlResponse(xmlString) {
  * @param {string} serverPath - Path to the server module (relative to project root)
  * @returns {Promise<{client: Client, clientTransport: StdioClientTransport}>} The initialized client and transport
  */
-export async function createClient(serverPath = 'index.ts') {
+export async function createClient(serverPath = 'dist/index.js') {
   const fullServerPath = resolve(serverPath);
   
   // Prepare environment variables for the server process

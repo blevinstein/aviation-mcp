@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "aviation-node": {
+    "aviation-local": {
       "command": "node",
       "args": ["./dist/index.js"],
       "env": {
