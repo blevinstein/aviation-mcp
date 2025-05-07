@@ -1,6 +1,6 @@
 {
   "name": "aviation-mcp",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "index.js",
   "author": "Brian Levinstein <blevinstein@gmail.com>",
   "license": "MIT",
