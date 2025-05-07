@@ -9,52 +9,49 @@ Aviation MCP provides a suite of Model Context Protocol (MCP) servers that map t
 - Easy configuration for use with any MCP-compatible LLM client
 - Published as an npm package: [`aviation-mcp`](https://www.npmjs.com/package/aviation-mcp)
 
-## Installation
+## Using the MCP Server
 
-You can use Aviation MCP in two ways:
+Add the aviation-mcp server to your mcp.json like so. Make sure to update the keys to contain valid values (visit https://api.faa.gov/s/ for FAA API client creds, https://api-ninjas.com/ for their API keys) or remove them (and the relevant APIs will be hidden).
 
-### 1. Clone the Repository
+Aviation Weather (including lots of geo-referenced data) and Charts do not need any API keys. Everything else is currently broken, or I'm waiting on API approvals from the FAA API website, etc.
 
-```sh
-git clone https://github.com/blevinstein/aviation-mcp.git
-cd aviation-mcp
+```json
+{
+   "mcpServers": {
+      "aviation": {
+         "command": "npx",
+         "args": [
+            "-y",
+            "aviation-mcp"
+         ],
+         "env": {
+            "API_NINJA_KEY": "<your-key>",
+            "FAA_CLIENT_ID": "<your-id>",
+            "FAA_CLIENT_SECRET": "<your-secret>"
+         }
+      }
+   }
+}
 ```
-
-### 2. Install from npm
-
-```sh
-yarn add aviation-mcp
-# or
-npm install aviation-mcp
-```
-
-## Configuration
-
-1. **Copy the example config:**
-   
-   ```sh
-   cp mcp.example.json mcp.json
-   ```
-
-2. **Edit `mcp.json`** to insert your API keys and credentials for the services you want to use. See env vars in the file for required fields.
-
-3. **Supply `mcp.json` to your MCP client** (such as Cursor, Claude, or any compatible LLM client) to enable aviation data access.
-
-## Available MCP Servers
-
-The following servers are available (see `.cursor/mcp.json` for details):
 
 ### Official Sources
 
 - **weather**: Aviation weather data (METAR, TAF, PIREP, SIGMET, G-AIRMET, etc.)
 - **charts**: Sectional, TAC, IFR enroute, and TPP charts
+
+### 🚧 Broken Sources 🚧
+
 - **precipitation**: FAA EIM Weather Proximity API (precipitation data)
 - **airports**: FAA airport and runway information
 - **notam**: FAA NOTAM API
 
-### Unofficial Sources (Caution!!)
+### Not Implemented
 
-- **aircraft**: Aircraft data from API Ninjas and other sources
+- **delays**: The ASWS FAA API provides information about airport delays.
+
+### 🚧🚧 Unofficial Sources 🚧🚧
+
+- **aircraft**: Aircraft data
 
 ## Usage
 

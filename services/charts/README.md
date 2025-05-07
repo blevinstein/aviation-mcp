@@ -9,12 +9,6 @@ This MCP integration provides access to the FAA's Aeronautical Product Release A
    cp .env.example .env
    ```
 
-2. Add your FAA API credentials to `.env`:
-   ```
-   FAA_CLIENT_ID=your_client_id_here
-   FAA_CLIENT_SECRET=your_client_secret_here
-   ```
-
 3. The MCP tools will automatically use these credentials for authentication.
 
 ## Available Tools
@@ -67,31 +61,14 @@ You can test the API directly using curl:
 
 ```bash
 # Get a sectional chart
-curl -H "client_id: $FAA_CLIENT_ID" \
-     -H "client_secret: $FAA_CLIENT_SECRET" \
-     "https://external-api.faa.gov/apra/vfr/sectional/chart?geoname=New%20York&format=pdf"
+curl "https://external-api.faa.gov/apra/vfr/sectional/chart?geoname=New%20York&format=pdf"
 
 # Get a terminal area chart
-curl -H "client_id: $FAA_CLIENT_ID" \
-     -H "client_secret: $FAA_CLIENT_SECRET" \
-     "https://external-api.faa.gov/apra/vfr/tac/chart?geoname=Los%20Angeles&format=pdf"
+curl "https://external-api.faa.gov/apra/vfr/tac/chart?geoname=Los%20Angeles&format=pdf"
 
 # Get an IFR enroute chart
-curl -H "client_id: $FAA_CLIENT_ID" \
-     -H "client_secret: $FAA_CLIENT_SECRET" \
-     "https://external-api.faa.gov/apra/enroute/chart?geoname=US&seriesType=low&format=pdf"
+curl "https://external-api.faa.gov/apra/enroute/chart?geoname=US&seriesType=low&format=pdf"
 ```
-
-### Environment Variables
-
-The integration requires the following environment variables:
-
-| Variable | Description |
-|----------|-------------|
-| `FAA_CLIENT_ID` | Your FAA API client ID |
-| `FAA_CLIENT_SECRET` | Your FAA API client secret |
-
-These variables are used in the HTTP headers for API authentication.
 
 ## Notes
 
