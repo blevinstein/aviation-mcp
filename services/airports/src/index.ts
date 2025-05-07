@@ -1,12 +1,3 @@
-#!/usr/bin/env node
-
-import dotenv from 'dotenv';
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import fetch from "node-fetch";
 
 // Types matching SDK 1.0.1
@@ -15,8 +6,6 @@ interface Tool {
   description: string;
   inputSchema: any;
 }
-
-dotenv.config();
 
 const DEBUG = process.env.DEBUG === 'true';
 function debugLog(...args: any[]) {
