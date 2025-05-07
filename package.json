@@ -18,8 +18,8 @@
     "test:notam": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/notam/test",
     "test:precipitation": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/precipitation/test",
     "test:aircraft": "NODE_OPTIONS='--experimental-vm-modules' npx jest services/aircraft/test",
-    "start": "ts-node --esm index.ts",
     "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
+    "start": "yarn build && node dist/index.js",
     "prepare": "yarn build"
   },
   "dependencies": {

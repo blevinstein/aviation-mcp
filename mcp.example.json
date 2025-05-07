@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "aviation-node": {
-      "command": "npx",
-      "args": ["ts-node", "--esm", "-T", "./index.ts"],
+      "command": "node",
+      "args": ["./dist/index.js"],
       "env": {
         "API_NINJA_KEY": "",
         "FAA_CLIENT_ID": "",

@@ -8,14 +8,12 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 // Import tool definitions and handlers from each service
-import * as Weather from './services/weather/src/index.ts';
-import * as Charts from './services/charts/src/index.ts';
-import * as Precipitation from './services/precipitation/src/index.ts';
-import * as Airports from './services/airports/src/index.ts';
-import * as Notam from './services/notam/src/index.ts';
-import * as Aircraft from './services/aircraft/src/index.ts';
-
-console.error(`Args: ${JSON.stringify(process.argv)}`);
+import * as Weather from './services/weather/src/index.js';
+import * as Charts from './services/charts/src/index.js';
+import * as Precipitation from './services/precipitation/src/index.js';
+import * as Airports from './services/airports/src/index.js';
+import * as Notam from './services/notam/src/index.js';
+import * as Aircraft from './services/aircraft/src/index.js';
 
 // Enable debug logging
 const DEBUG = process.env.DEBUG === 'true';
