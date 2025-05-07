@@ -15,6 +15,8 @@ import * as Airports from './services/airports/src/index.ts';
 import * as Notam from './services/notam/src/index.ts';
 import * as Aircraft from './services/aircraft/src/index.ts';
 
+console.error(`Args: ${JSON.stringify(process.argv)}`);
+
 // Enable debug logging
 const DEBUG = process.env.DEBUG === 'true';
 
@@ -48,12 +50,10 @@ process.on('exit', (code) => {
 
 // Authentication check functions
 function hasFaaAuth() {
-  console.error(`Checking FAA keys: ${process.env.FAA_CLIENT_ID}`);
   return !!(process.env.FAA_CLIENT_ID && process.env.FAA_CLIENT_SECRET);
 }
 
 function hasAircraftApiKey() {
-  console.error(`Checking API Ninja key: ${process.env.API_NINJA_KEY?.substring(0, 4)}`);
   return !!process.env.API_NINJA_KEY;
 }
 
