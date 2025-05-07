@@ -14,7 +14,12 @@
       "args": [
         "-y",
         "aviation-mcp"
-      ]
+      ],
+      "env": {
+        "API_NINJA_KEY": "",
+        "FAA_CLIENT_ID": "",
+        "FAA_CLIENT_SECRET": ""
+      }
     }
   }
 } 
