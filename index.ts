@@ -10,7 +10,7 @@ import {
 // Import tool definitions and handlers from each service
 import * as Weather from './services/weather/src/index.js';
 import * as Charts from './services/charts/src/index.js';
-import * as Precipitation from './services/precipitation/src/index.js';
+//import * as Precipitation from './services/precipitation/src/index.js';
 import * as Airports from './services/airports/src/index.js';
 import * as Notam from './services/notam/src/index.js';
 import * as Aircraft from './services/aircraft/src/index.js';
@@ -78,8 +78,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     ...Weather.TOOLS,
     ...Charts.TOOLS,
     
-    // Conditional tools based on auth
-    ...(hasFaaAuth() ? Precipitation.TOOLS : []),
+    //...(hasFaaAuth() ? Precipitation.TOOLS : []),
     ...(hasFaaAuth() ? Airports.TOOLS : []),
     ...(hasFaaAuth() ? Notam.TOOLS : []),
     ...(hasAircraftApiKey() ? Aircraft.TOOLS : [])
@@ -111,6 +110,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       return await Charts.handleToolCall(toolName, args);
     }
     
+    /*
     if (Precipitation.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasFaaAuth()) {
         return {
@@ -120,6 +120,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       return await Precipitation.handleToolCall(toolName, args);
     }
+    */
     
     if (Airports.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasFaaAuth()) {

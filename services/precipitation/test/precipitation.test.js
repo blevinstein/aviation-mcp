@@ -1,6 +1,6 @@
 import { createClient } from '../../common/test/helpers.js';
 
-describe('Precipitation API via MCP', () => {
+describe.skip('Precipitation API via MCP', () => {
   let client;
   let clientTransport;
 
@@ -12,7 +12,7 @@ describe('Precipitation API via MCP', () => {
     
     // Verify tools are available
     const tools = await client.listTools();
-    expect(tools.tools.some(tool => tool.name === 'get-precipitation')).toBe(true);
+    expect(tools.tools.some(tool => tool.name === 'get_precipitation')).toBe(true);
   });
 
   afterAll(async () => {
@@ -21,7 +21,7 @@ describe('Precipitation API via MCP', () => {
     }
   });
 
-  test.skip('should require points array', async () => {
+  test('should require points array', async () => {
     const result = await client.callTool({
       name: 'get_precipitation',
       arguments: {
@@ -33,26 +33,7 @@ describe('Precipitation API via MCP', () => {
     expect(result.content[0].text).toContain('At least one point must be provided');
   });
 
-  test.skip('should require client ID and client secret', async () => {
-    const result = await client.callTool({
-      name: 'get_precipitation',
-      arguments: {
-        points: [
-          {
-            lat: 39.45,
-            lon: -74.57,
-            timeStr: '20230101T120000'
-          }
-        ]
-        // Missing credentials
-      }
-    });
-    
-    expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('Client ID and Client Secret are required');
-  });
-
-  test.skip('should validate point format', async () => {
+  test('should validate point format', async () => {
     const result = await client.callTool({
       name: 'get_precipitation',
       arguments: {
@@ -71,7 +52,7 @@ describe('Precipitation API via MCP', () => {
     expect(result.isError).toBeTruthy();
   });
   
-  test.skip('should retrieve precipitation data with valid credentials', async () => {
+  test('should retrieve precipitation data with valid credentials', async () => {
     const result = await client.callTool({
       name: 'get_precipitation',
       arguments: {
@@ -82,9 +63,7 @@ describe('Precipitation API via MCP', () => {
             timeStr: '20230101T120000'
           }
         ],
-        includeDescription: true,
-        clientId: process.env.EIM_CLIENT_ID,
-        clientSecret: process.env.EIM_CLIENT_SECRET
+        includeDescription: true
       }
     });
 
