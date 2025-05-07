@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { parseStringPromise } from 'xml2js';
 
 // Types matching SDK 1.0.1
 interface Tool {
@@ -16,6 +17,66 @@ const TAC_GEONAMES = [
 ];
 const ENROUTE_GEONAMES = ["US","Alaska","Pacific","Caribbean"];
 const ENROUTE_SERIES = ["low","high","area"];
+
+const STATE_TO_TPP_REGION = {
+  WA: ["NW1"],
+  OR: ["NW1"],
+  ID: ["NW1"],
+  MT: ["NW1"],
+  WY: ["NW1"],
+
+  CA: ["SW2", "SW3"],
+  NV: ["SW4"],
+  UT: ["SW4"],
+  AZ: ["SW4"],
+  CO: ["SW1"],
+  NM: ["SW1"],
+
+  TX: ["SC3", "SC2", "SC5"],
+  OK: ["SC1"],
+  AR: ["SC1"],
+  LA: ["SC4"],
+  MS: ["SC4"],
+
+  ND: ["NC1"],
+  SD: ["NC1"],
+  MN: ["NC1"],
+  NE: ["NC2"],
+  KS: ["NC2"],
+  IA: ["NC3"],
+  MO: ["NC3"],
+
+  WI: ["EC3"],
+  IL: ["EC3"],
+  MI: ["EC1"],
+  IN: ["EC2"],
+  OH: ["EC2"],
+
+  NY: ["NE2"],
+  NJ: ["NE2"],
+  VA: ["NE3"],
+  DC: ["NE3"],
+  CT: ["NE1"],
+  RI: ["NE1"],
+  MA: ["NE1"],
+  VT: ["NE1"],
+  NH: ["NE1"],
+  ME: ["NE1"],
+  PA: ["NE4"],
+  WV: ["NE4"],
+
+  KY: ["SE1"],
+  TN: ["SE1"],
+  NC: ["SE2"],
+  SC: ["SE2"],
+  GA: ["SE4"],
+  AL: ["SE4"],
+  FL: ["SE3"],
+  PR: ["SE3"],
+  VI: ["SE3"],
+
+  AK: ["AK"],
+};
 
 // Export tools for use by the main server
 export const TOOLS: Tool[] = [
@@ -168,28 +229,18 @@ export const TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        icao: {
-          type: "string",
-          description: "ICAO airport code (e.g., 'KJFK', 'KLAX')"
-        },
         geoname: {
           type: "string",
-          description: "Geographic region (default US, or state name)"
+          description: "Geographic region (default US, or two-letter state code)"
         },
         edition: {
           type: "string",
           enum: ["current", "next", "changeset"],
           default: "current",
           description: "Edition of the chart"
-        },
-        format: {
-          type: "string",
-          enum: ["pdf", "tiff"],
-          default: "pdf",
-          description: "Format of the chart"
         }
       },
-      required: ["icao"]
+      required: []
     }
   },
   {
@@ -313,20 +364,61 @@ async function handleEnrouteInfo(edition = 'current') {
   return { content: [{ type: "text", text: data }], isError: false };
 }
 
-async function handleTPP(icao, geoname = 'US', edition = 'current', format = 'pdf') {
-  checkEnum(format, ["pdf", "tiff"], 'format');
+async function handleTPP(geoname = 'US', edition = 'current') {
   checkEnum(edition, ["current", "next", "changeset"], 'edition');
+  // Always use US for the API call
   const url = new URL(`${BASE_URL}/dtpp/chart`);
-  url.searchParams.append("geoname", geoname);
-  url.searchParams.append("airport", icao);
-  url.searchParams.append("format", format);
+  url.searchParams.append("geoname", "US");
   url.searchParams.append("edition", edition);
   const response = await fetch(url.toString());
   if (!response.ok) {
     return { content: [{ type: "text", text: `Error: ${response.status} ${response.statusText}` }], isError: true };
   }
-  const data = await response.text();
-  return { content: [{ type: "text", text: data }], isError: false };
+  const xml = await response.text();
+  const parsed = await parseStringPromise(xml, { explicitArray: false });
+  // Defensive: handle both single and multiple edition nodes
+  const editions = Array.isArray(parsed.productSet.edition) ? parsed.productSet.edition : [parsed.productSet.edition];
+  // Find the upload identifier and edition date from the first edition
+  const firstEdition = editions[0];
+  const productUrl = firstEdition.product.$.url || firstEdition.product.url;
+  const match = productUrl.match(/\/([^\/]+)\/terminal\//);
+  const uploadId = match ? match[1] : null;
+  const editionDate = firstEdition.editionDate;
+  // List of all possible regions
+  const allRegions = [
+    "AK","EC1","EC2","EC3","NC1","NC2","NC3","NE1","NE2","NE3","NE4","NW1",
+    "SC1","SC2","SC3","SC4","SC5","SE1","SE2","SE3","SE4","SW1","SW2","SW3","SW4"
+  ];
+  // Determine which regions to return
+  let regions = allRegions;
+  if (geoname && geoname !== 'US') {
+    const code = geoname.trim().toUpperCase();
+    if (STATE_TO_TPP_REGION[code]) {
+      regions = STATE_TO_TPP_REGION[code];
+    } else {
+      return { content: [{ type: "text", text: `Unknown state or region: ${geoname}` }], isError: true };
+    }
+  }
+
+  // Convert editionDate from MM/DD/YYYY to YYYY-MM-DD
+  let editionDateUrl = editionDate;
+  if (editionDate && editionDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+    const [mm, dd, yyyy] = editionDate.split('/');
+    editionDateUrl = `${yyyy}-${mm}-${dd}`;
+  }
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify({
+        editionDate: editionDateUrl,
+        regions: regions.map(region => ({
+          region,
+          url: `https://aeronav.faa.gov/${uploadId}/terminal/${editionDateUrl}/${region}.pdf`
+        }))
+      })
+    }],
+    isError: false
+  };
 }
 
 async function handleTPPInfo(geoname = 'US', edition = 'current') {
@@ -371,8 +463,8 @@ export async function handleToolCall(toolName: string, args: any) {
         return await handleEnrouteInfo(edition);
       }
       case "get_tpp": {
-        const { icao, geoname, edition, format } = args;
-        return await handleTPP(icao, geoname, edition, format);
+        const { geoname, edition } = args;
+        return await handleTPP(geoname, edition);
       }
       case "get_tpp_info": {
         const { geoname, edition } = args;
