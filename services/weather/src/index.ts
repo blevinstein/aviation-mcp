@@ -43,7 +43,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Geographic bounding box (lat0, lon0, lat1, lon1)"
+          description: "Geographic bounding box (lat1,lon1,lat2,lon2)"
         },
         date: {
           type: "string",
@@ -75,7 +75,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Geographic bounding box (lat0, lon0, lat1, lon1)"
+          description: "Geographic bounding box (lat1,lon1,lat2,lon2)"
         },
         time: {
           type: "string",
@@ -166,7 +166,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -189,7 +189,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -212,7 +212,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -235,7 +235,7 @@ export const TOOLS: Tool[] = [
         },
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -327,7 +327,7 @@ export const TOOLS: Tool[] = [
       properties: {
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
@@ -346,7 +346,7 @@ export const TOOLS: Tool[] = [
       properties: {
         bbox: {
           type: "string",
-          description: "Bounding box coordinates (format: lon1,lat1,lon2,lat2)"
+          description: "Bounding box coordinates (format: lat1,lon1,lat2,lon2)"
         },
         format: {
           type: "string",
