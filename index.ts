@@ -80,7 +80,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     
     //...(hasFaaAuth() ? Precipitation.TOOLS : []),
     //...(hasFaaAuth() ? Airports.TOOLS : []),
-    ...(hasFaaAuth() ? Notam.TOOLS : []),
+    //...(hasFaaAuth() ? Notam.TOOLS : []),
     ...(hasAircraftApiKey() ? Aircraft.TOOLS : [])
   ];
   
@@ -130,7 +130,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       return await Airports.handleToolCall(toolName, args);
     }
-    */
     
     if (Notam.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasFaaAuth()) {
@@ -141,6 +140,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       return await Notam.handleToolCall(toolName, args);
     }
+    */
     
     if (Aircraft.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasAircraftApiKey()) {

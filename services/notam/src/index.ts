@@ -180,7 +180,15 @@ async function handleNotams(
   
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`NOTAM API Error (${response.status}): ${errorText}`);
+    return {
+      content: [
+        {
+          type: "text",
+          text: `NOTAM API Error (${response.status}): ${errorText}`
+        }
+      ],
+      isError: true
+    }
   }
   
   const data = await response.text();
