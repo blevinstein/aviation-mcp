@@ -13,7 +13,7 @@ Aviation MCP provides a suite of Model Context Protocol (MCP) servers that map t
 
 Add the aviation-mcp server to your mcp.json like so. Make sure to update the keys to contain valid values (visit https://api.faa.gov/s/ for FAA API client creds, https://api-ninjas.com/ for their API keys) or remove them (and the relevant APIs will be hidden).
 
-Aviation Weather (including lots of geo-referenced data) and Charts do not need any API keys. Everything else is currently broken, or I'm waiting on API approvals from the FAA API website, etc.
+Aviation Weather (including lots of geo-referenced data) and Charts do not need any API keys. NOTAMs require an FAA client id/secret.
 
 ```json
 {
@@ -38,12 +38,14 @@ Aviation Weather (including lots of geo-referenced data) and Charts do not need 
 
 - **weather**: Aviation weather data (METAR, TAF, PIREP, SIGMET, G-AIRMET, etc.)
 - **charts**: Sectional, TAC, IFR enroute, and TPP charts
+- **notam**: FAA NOTAM API
 
 ### 🚧 Broken Sources 🚧
 
+These sources would be helpful, but the integration or API access is not yet working:
+
 - **precipitation**: FAA EIM Weather Proximity API (precipitation data)
 - **airports**: FAA airport and runway information
-- **notam**: FAA NOTAM API
 
 ### Not Implemented
 
@@ -57,13 +59,12 @@ Aviation Weather (including lots of geo-referenced data) and Charts do not need 
 
 Once configured, your LLM client can connect to the MCP servers and query aviation data as needed. Refer to your client's documentation for details on supplying the `mcp.json` config.
 
+For EFB management, consider combining with [filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
+or [gdrive](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive).
+
 ## API Coverage
 
 For a detailed list of supported APIs, endpoints, and integration status, see [`Sources.md`](./Sources.md).
-
-## Contributing
-
-Contributions are welcome! Please open issues or pull requests for bug fixes, new features, or documentation improvements.
 
 ## License
 
