@@ -15,15 +15,6 @@ import * as Charts from './services/charts/src/index.js';
 import * as Notam from './services/notam/src/index.js';
 import * as Aircraft from './services/aircraft/src/index.js';
 
-// Enable debug logging
-const DEBUG = process.env.DEBUG === 'true';
-
-function debugLog(...args: any[]) {
-  if (DEBUG) {
-    console.error('[DEBUG]', ...args);
-  }
-}
-
 // Register process error handlers
 process.on('uncaughtException', (err) => {
   console.error('[FATAL] Uncaught exception:', err);
@@ -73,7 +64,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     ...(hasAircraftApiKey() ? Aircraft.TOOLS : [])
   ];
   
-  debugLog(`ListTools: ${allTools.length} tools`);
   return { tools: allTools };
 });
 
@@ -145,7 +135,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
     };
     
   } catch (error) {
-    debugLog('Error handling tool call:', error);
     return {
       content: [{
         type: "text",

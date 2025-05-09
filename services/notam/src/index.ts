@@ -82,7 +82,7 @@ export const TOOLS: Tool[] = [
           description: "The location radius in nautical miles (max: 100)"
         },
         lastUpdatedDate: {
-          type: "string",
+          type: "number",
           description: "The last update date"
         },
         sortBy: {
@@ -129,7 +129,7 @@ async function handleNotams(
   locationLongitude?: number,
   locationLatitude?: number,
   locationRadius?: number,
-  lastUpdatedDate?: string,
+  lastUpdatedDate?: number,
   sortBy?: string,
   sortOrder?: string,
   pageSize?: number,
@@ -155,7 +155,7 @@ async function handleNotams(
   if (locationLongitude !== undefined) urlParams.append('locationLongitude', locationLongitude.toString());
   if (locationLatitude !== undefined) urlParams.append('locationLatitude', locationLatitude.toString());
   if (locationRadius !== undefined) urlParams.append('locationRadius', locationRadius.toString());
-  if (lastUpdatedDate) urlParams.append('lastUpdatedDate', lastUpdatedDate);
+  if (lastUpdatedDate !== undefined) urlParams.append('lastUpdatedDate', lastUpdatedDate.toString());
   if (sortBy) urlParams.append('sortBy', sortBy);
   if (sortOrder) urlParams.append('sortOrder', sortOrder);
   if (pageSize !== undefined) urlParams.append('pageSize', pageSize.toString());
