@@ -24,13 +24,6 @@ function debugLog(...args: any[]) {
   }
 }
 
-// Log environment details
-debugLog('Process started with:');
-debugLog('- Node version:', process.version);
-debugLog('- Current directory:', process.cwd());
-debugLog('- ENV vars:', Object.keys(process.env).filter(key => !key.includes('SECRET') && !key.includes('KEY')));
-debugLog('- Arguments:', process.argv);
-
 // Register process error handlers
 process.on('uncaughtException', (err) => {
   console.error('[FATAL] Uncaught exception:', err);
@@ -55,8 +48,6 @@ function hasAircraftApiKey() {
   return !!process.env.API_NINJA_KEY;
 }
 
-// Server setup
-debugLog('Creating MCP server');
 const server = new Server(
   {
     name: "aviation-mcp",
@@ -71,8 +62,6 @@ const server = new Server(
 
 // Set up request handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  debugLog('Received ListTools request');
-  
   let allTools = [
     // Weather tools are always available
     ...Weather.TOOLS,
@@ -80,20 +69,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     
     //...(hasFaaAuth() ? Precipitation.TOOLS : []),
     //...(hasFaaAuth() ? Airports.TOOLS : []),
-    //...(hasFaaAuth() ? Notam.TOOLS : []),
+    ...(hasFaaAuth() ? Notam.TOOLS : []),
     ...(hasAircraftApiKey() ? Aircraft.TOOLS : [])
   ];
   
-  debugLog(`Returning ${allTools.length} tools`);
+  debugLog(`ListTools: ${allTools.length} tools`);
   return { tools: allTools };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   const toolName = request.params.name;
   const args = request.params.arguments;
-  
-  debugLog('Received CallTool request:', { name: toolName, args });
-  
+
   try {
     // Route to proper service based on tool name
     if (Weather.TOOLS.map(t => t.name).includes(toolName)) {
@@ -130,6 +117,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       return await Airports.handleToolCall(toolName, args);
     }
+    */
     
     if (Notam.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasFaaAuth()) {
@@ -140,7 +128,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
       return await Notam.handleToolCall(toolName, args);
     }
-    */
     
     if (Aircraft.TOOLS.map(t => t.name).includes(toolName)) {
       if (!hasAircraftApiKey()) {
@@ -152,8 +139,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       return await Aircraft.handleToolCall(toolName, args);
     }
     
-    // Unknown tool
-    debugLog('Unknown tool:', toolName);
     return {
       content: [{ type: "text", text: `Unknown tool: ${toolName}` }],
       isError: true
@@ -173,26 +158,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
 
 async function runServer() {
   try {
-    debugLog('Initializing StdioServerTransport');
     const transport = new StdioServerTransport();
-    
-    debugLog('Connecting to transport');
     await server.connect(transport);
-    
-    console.error("Aviation MCP Server running on stdio");
-    
-    // Check if stdin/stdout are available
-    debugLog('Checking stdin/stdout availability:');
-    debugLog('- stdin isTTY:', process.stdin.isTTY);
-    debugLog('- stdout isTTY:', process.stdout.isTTY);
-    debugLog('- stderr isTTY:', process.stderr.isTTY);
   } catch (error) {
     console.error("[FATAL] Failed to start server:", error);
     process.exit(1);
   }
 }
 
-debugLog('About to start server');
 runServer().catch((error) => {
   console.error("Fatal error running server:", error);
   process.exit(1);

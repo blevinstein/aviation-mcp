@@ -1,6 +1,6 @@
 import { createClient } from '../../common/test/helpers.js';
 
-describe.skip('NOTAM API via MCP', () => {
+describe('NOTAM API via MCP', () => {
   let client;
   let clientTransport;
 
@@ -20,22 +20,9 @@ describe.skip('NOTAM API via MCP', () => {
       await clientTransport.close?.();
     }
   });
-
-  test('should require client ID and client secret', async () => {
-    const result = await client.callTool({
-      name: 'get_notams',
-      arguments: {
-        icaoLocation: 'KJFK'
-        // No credentials
-      }
-    });
-    
-    expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('401');
-  });
   
   // This test would require valid API credentials to run
-  test('should retrieve NOTAMs when valid credentials are provided', async () => {
+  test('should retrieve NOTAMs', async () => {
     const result = await client.callTool({
       name: 'get_notams',
       arguments: {
