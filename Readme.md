@@ -2,6 +2,10 @@
 
 Aviation MCP provides a suite of Model Context Protocol (MCP) servers that map to FAA and other aviation APIs, making it easy to integrate real-time aviation data into your LLM-powered workflows. This project is designed for developers who want to connect their LLM clients (such as Cursor, Claude, or others) to authoritative aviation data sources for weather, NOTAMs, charts, aircraft info, and more.
 
+> **⚠️ Disclaimer ⚠️**
+> 
+> The developer of this code is **not responsible** for the correctness or safety of the APIs providing data, or your flight planning for your particular flight. This applies to both the software and the instructions in [FlightPlanning.md](./FlightPlanning.md), which **do NOT substitute for the expertise of an appropriately licensed pilot**. The pilot in command is solely responsible for the safety of flight and compliance with all relevant regulations.
+
 ## Features
 
 - Modular MCP servers for aviation data
@@ -59,6 +63,10 @@ These sources would be helpful, but the integration or API access is not yet wor
 
 Once configured, your LLM client can connect to the MCP servers and query aviation data as needed. Refer to your client's documentation for details on supplying the `mcp.json` config.
 
+See [FlightPlanning.md](./FlightPlanning.md) for a sample system prompt to be used for flight planning.
+
+For temporal awareness, I recommend combining with [time](https://github.com/modelcontextprotocol/servers/tree/main/src/time).
+
 For EFB management, consider combining with [filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
 or [gdrive](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive).
 
@@ -68,4 +76,4 @@ For a detailed list of supported APIs, endpoints, and integration status, see [`
 
 ## License
 
-MIT 
+MIT
