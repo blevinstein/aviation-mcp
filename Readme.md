@@ -59,6 +59,11 @@ These sources would be helpful, but the integration or API access is not yet wor
 
 - **aircraft**: Aircraft data
 
+### 🚧 Missing Sources 🚧
+
+- Procedure routes in a machine-readable format. TODO: Download CIFP data and use something like [arinc424](https://github.com/jack-laverty/arinc424) to transform it into a usable format.
+- Airspace data in a machine-readable format. TODO: Download NASR data and use a library to read shapefiles and/or AIXM data.
+
 ## Usage
 
 Once configured, your LLM client can connect to the MCP servers and query aviation data as needed. Refer to your client's documentation for details on supplying the `mcp.json` config.
